@@ -4,7 +4,8 @@ import { GitHubIcon } from "../ui/brand-icons";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
-const THUM = "https://image.thum.io/get/width/1200/crop/630/";
+const THUM = (url: string) =>
+  `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1200&h=630`;
 
 const projects = [
   {
@@ -16,7 +17,7 @@ const projects = [
     tags: ["Astro", "React", "TypeScript", "Tailwind CSS", "GitHub Actions"],
     github: "https://github.com/cevival/cevival-portfolio",
     demo: "https://cevival-portfolio.vercel.app",
-    screenshot: `${THUM}https://cevival-portfolio.vercel.app`,
+    screenshot: THUM("https://cevival-portfolio.vercel.app"),
     featured: true,
   },
   {
@@ -28,7 +29,7 @@ const projects = [
     tags: ["Astro", "Tailwind CSS", "JavaScript"],
     github: null,
     demo: "https://pointsrambrouch.lu",
-    screenshot: `${THUM}https://pointsrambrouch.lu`,
+    screenshot: THUM("https://pointsrambrouch.lu"),
     featured: false,
   },
   {
@@ -40,7 +41,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
     demo: "https://marque.lu/fr",
-    screenshot: `${THUM}https://marque.lu/fr`,
+    screenshot: THUM("https://marque.lu/fr"),
     featured: false,
   },
   {
@@ -52,7 +53,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "E-commerce"],
     github: null,
     demo: "https://lbshop.lu/fr",
-    screenshot: `${THUM}https://lbshop.lu/fr`,
+    screenshot: THUM("https://lbshop.lu/fr"),
     featured: false,
   },
   {
@@ -64,7 +65,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
     demo: "https://lbdigital.site/fr",
-    screenshot: `${THUM}https://lbdigital.site/fr`,
+    screenshot: THUM("https://lbdigital.site/fr"),
     featured: false,
   },
   {
@@ -76,7 +77,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL"],
     github: null,
     demo: "https://thill-loehr.lu",
-    screenshot: `${THUM}https://thill-loehr.lu`,
+    screenshot: THUM("https://thill-loehr.lu"),
     featured: false,
   },
   {
@@ -88,7 +89,7 @@ const projects = [
     tags: ["WordPress", "PHP", "CSS3", "SEO"],
     github: null,
     demo: "https://www.sconduite57100.com",
-    screenshot: `${THUM}https://www.sconduite57100.com`,
+    screenshot: THUM("https://www.sconduite57100.com"),
     featured: false,
   },
 ];
