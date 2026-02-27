@@ -1,8 +1,6 @@
-# Astro Starter Kit: Basics
+# Guillaume Desplan — Portfolio
 
-```sh
-npm create astro@latest -- --template basics
-```
+Portfolio personnel one-page construit avec **Astro**, **React**, **Tailwind CSS** et **shadcn/ui**.
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
