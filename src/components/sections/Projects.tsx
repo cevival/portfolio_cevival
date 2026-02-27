@@ -33,10 +33,10 @@ const projects = [
     featured: false,
   },
   {
-    title: "Marque.lu",
+    title: "LB Digita Marque",
     description: {
-      fr: "Plateforme de marques luxembourgeoises développée en Laravel. Gestion de contenu, navigation multilingue et interface d'administration.",
-      en: "Luxembourg brands platform developed with Laravel. Content management, multilingual navigation, and admin interface.",
+      fr: "Site LB Digital spécialisé dans le service de dépôt de marque au Benelux. Gestion de contenu, navigation multilingue et interface d'administration.",
+      en: "LB Digital website specializing in trademark registration services in the Benelux region. Content management, multilingual navigation, and admin interface.",
     },
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
@@ -47,8 +47,8 @@ const projects = [
   {
     title: "LB Shop",
     description: {
-      fr: "Site e-commerce luxembourgeois en Laravel. Catalogue produits, gestion commandes et interface multilingue.",
-      en: "Luxembourg e-commerce site in Laravel. Product catalog, order management, and multilingual interface.",
+      fr: "Site LB Digital spécialisé dans le service de vente (textile, papetrerie, goodies, et autre..), développé en Laravel.",
+      en: "LB Digital website specializing in sales services (textiles, stationery, goodies, and more), developed in Laravel.",
     },
     tags: ["Laravel", "PHP", "MySQL", "E-commerce"],
     github: null,
@@ -57,10 +57,10 @@ const projects = [
     featured: false,
   },
   {
-    title: "LB Digital",
+    title: "LB Digital Site",
     description: {
-      fr: "Site institutionnel de l'agence LB Digital (Luxembourg) en Laravel. Présentation des services, blog et formulaires de contact.",
-      en: "Institutional website of LB Digital agency (Luxembourg) in Laravel. Services presentation, blog, and contact forms.",
+      fr: "Site LB Digital spécialisé dans le service de création de site internet. Présentation des services, blog et formulaires de contact.",
+      en: "LB Digital website specializing in website creation services. Services presentation, blog, and contact forms.",
     },
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
