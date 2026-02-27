@@ -165,3 +165,188 @@ section {
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
 }
+
+/* ─── KEYFRAMES ─── */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 40px -8px hsl(var(--primary) / 0.35),
+      0 0 80px -20px hsl(var(--primary) / 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 60px -6px hsl(var(--primary) / 0.6),
+      0 0 100px -16px hsl(var(--primary) / 0.3);
+  }
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+/* ─── ANIMATION UTILITIES ─── */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ─── GLASSMORPHISM ─── */
+.glass {
+  background: hsl(var(--card) / 0.55);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid hsl(var(--border) / 0.4);
+}
+.dark .glass {
+  background: hsl(var(--card) / 0.4);
+}
+
+/* ─── ROTATING GRADIENT BORDER ─── */
+.animated-border {
+  position: relative;
+  isolation: isolate;
+}
+.animated-border::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    hsl(var(--primary)),
+    #06b6d4,
+    #8b5cf6,
+    hsl(var(--primary))
+  );
+  animation: border-spin 5s linear infinite;
+  z-index: -1;
+  opacity: 0.8;
+}
+.animated-border::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: hsl(var(--card));
+  z-index: -1;
+}
+
+/* ─── AURORA BACKGROUND ─── */
+.aurora-bg {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--primary) / 0.06),
+    #06b6d4 / 0.04,
+    hsl(var(--primary) / 0.1),
+    #8b5cf6 / 0.05
+  );
+  background-size: 400% 400%;
+  animation: aurora 10s ease infinite;
+}
+
+/* ─── SHIMMER CARD ─── */
+.shimmer-card {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    hsl(var(--primary) / 0.06) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 3s ease infinite;
+  pointer-events: none;
+}
+
+/* ─── NEON UNDERLINE ─── */
+.neon-underline {
+  position: relative;
+}
+.neon-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary)), #06b6d4);
+  box-shadow: 0 0 8px hsl(var(--primary) / 0.8);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.neon-underline:hover::after {
+  transform: scaleX(1);
+}

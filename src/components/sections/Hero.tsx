@@ -16,14 +16,27 @@ export default function Hero() {
     >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[hsl(var(--primary)/0.08)] rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#06b6d4]/[0.05] rounded-full blur-3xl" />
+        <div
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[hsl(var(--primary)/0.08)] rounded-full blur-3xl animate-float"
+          style={{ animationDuration: "7s" }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#06b6d4]/[0.06] rounded-full blur-3xl animate-float"
+          style={{ animationDuration: "9s", animationDelay: "2s" }}
+        />
+        <div
+          className="absolute top-3/4 left-1/3 w-[300px] h-[300px] bg-[#8b5cf6]/[0.04] rounded-full blur-3xl animate-float"
+          style={{ animationDuration: "11s", animationDelay: "4s" }}
+        />
         <div className="absolute inset-0 grid-bg opacity-40" />
       </div>
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
         {/* Available tag */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-8">
+        <div
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-8 animate-fade-in-up"
+          style={{ animationDelay: "0.1s", opacity: 0 }}
+        >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
@@ -37,8 +50,11 @@ export default function Hero() {
         </p>
 
         {/* Name */}
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">
-          <span className="gradient-text">Guillaume</span>
+        <h1
+          className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up"
+          style={{ animationDelay: "0.3s", opacity: 0 }}
+        >
+          <span className="gradient-text text-glow">Guillaume</span>
           <br />
           <span className="text-[hsl(var(--foreground))]">Desplan</span>
         </h1>
@@ -49,7 +65,10 @@ export default function Hero() {
         </h2>
 
         {/* Subtitle */}
-        <p className="text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p
+          className="text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up"
+          style={{ animationDelay: "0.5s", opacity: 0 }}
+        >
           {t.subtitle[lang]}
         </p>
 

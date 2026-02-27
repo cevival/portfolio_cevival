@@ -60,7 +60,7 @@ export default function Contact() {
                 href={href}
                 target={href.startsWith("mailto") ? undefined : "_blank"}
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-5 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)] hover:shadow-[0_0_16px_-4px_hsl(var(--primary)/0.3)] transition-all group card-hover"
+                className="flex items-center gap-4 p-5 rounded-xl glass border-[hsl(var(--border)/0.5)] hover:border-[hsl(var(--primary)/0.5)] hover:shadow-[0_0_16px_-4px_hsl(var(--primary)/0.3)] transition-all group card-hover shimmer-card"
               >
                 <div className={`p-3 rounded-xl ${bg}`}>
                   <Icon className={`h-5 w-5 ${color}`} />

@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin, Briefcase, Languages, GraduationCap } from "lucide-react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import moi from "../../assets/moi.jpeg";
 
 export default function About() {
   const { lang } = useLang();
@@ -39,10 +40,14 @@ export default function About() {
           {/* Avatar placeholder */}
           <div className="flex justify-center">
             <div className="relative">
-              <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[#06b6d4] flex items-center justify-center text-white text-7xl font-bold shadow-2xl glow-primary-lg">
-                GD
+              <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[#06b6d4] flex items-center justify-center text-white text-7xl font-bold shadow-2xl glow-primary-lg animated-border animate-pulse-glow">
+                <img
+                  src={moi.src}
+                  alt="Guillaume Desplan"
+                  className="rounded-2xl object-cover w-full h-full"
+                />
               </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--primary)/0.3)] shadow-lg glow-primary flex items-center justify-center">
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 glass rounded-xl border border-[hsl(var(--primary)/0.4)] shadow-lg glow-primary flex items-center justify-center animate-float">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-[hsl(var(--primary))]">
                     3+
@@ -69,7 +74,7 @@ export default function About() {
               {info.map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-4 p-4 rounded-lg bg-[hsl(var(--muted))] border border-[hsl(var(--border))]"
+                  className="flex items-center gap-4 p-4 rounded-lg glass border-[hsl(var(--border)/0.5)] shimmer-card card-hover"
                 >
                   <div className="p-2 rounded-md bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]">
                     <Icon className="h-4 w-4" />

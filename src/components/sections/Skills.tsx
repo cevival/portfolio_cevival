@@ -69,7 +69,7 @@ export default function Skills() {
             return (
               <div
                 key={key}
-                className="relative p-6 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm overflow-hidden card-hover group"
+                className="relative p-6 rounded-xl glass border-[hsl(var(--border)/0.5)] shadow-sm overflow-hidden card-hover shimmer-card group"
               >
                 {/* Glow on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
