@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { Lang } from "../i18n/translations";
 
 interface LangContextType {
@@ -11,7 +11,7 @@ const LangContext = createContext<LangContextType>({
   toggle: () => {},
 });
 
-export function LangProvider({ children }: { children: React.ReactNode }) {
+export function LangProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [lang, setLang] = useState<Lang>("fr");
 
   useEffect(() => {
@@ -19,16 +19,18 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
     if (stored === "fr" || stored === "en") setLang(stored);
   }, []);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     setLang((prev) => {
       const next: Lang = prev === "fr" ? "en" : "fr";
       localStorage.setItem("portfolio-lang", next);
       return next;
     });
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({ lang, toggle }), [lang, toggle]);
 
   return (
-    <LangContext.Provider value={{ lang, toggle }}>
+    <LangContext.Provider value={contextValue}>
       {children}
     </LangContext.Provider>
   );

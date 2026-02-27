@@ -1,5 +1,6 @@
 import React from "react";
-import { ArrowDown, Github, Linkedin, Mail, Sparkles } from "lucide-react";
+import { ArrowDown, Mail, Sparkles } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
@@ -7,7 +8,6 @@ import { translations } from "../../i18n/translations";
 export default function Hero() {
   const { lang } = useLang();
   const t = translations.hero;
-  const nav = translations.nav;
 
   return (
     <section
@@ -108,7 +108,7 @@ export default function Hero() {
             className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
             aria-label="GitHub"
           >
-            <Github className="h-5 w-5" />
+            <GitHubIcon className="h-5 w-5" />
           </a>
           <a
             href="https://www.linkedin.com/in/guillaume-desplan-36008a2a2"
@@ -117,7 +117,7 @@ export default function Hero() {
             className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
             aria-label="LinkedIn"
           >
-            <Linkedin className="h-5 w-5" />
+            <LinkedInIcon className="h-5 w-5" />
           </a>
           <a
             href="mailto:desplan.guillaume33@gmail.com"

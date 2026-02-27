@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { GitHubIcon } from "../ui/brand-icons";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+
+const THUM = "https://image.thum.io/get/width/1200/crop/630/";
 
 const projects = [
   {
@@ -13,6 +16,7 @@ const projects = [
     tags: ["Astro", "React", "TypeScript", "Tailwind CSS", "GitHub Actions"],
     github: "https://github.com/cevival/cevival-portfolio",
     demo: "https://cevival-portfolio.vercel.app",
+    screenshot: `${THUM}https://cevival-portfolio.vercel.app`,
     featured: true,
   },
   {
@@ -24,6 +28,7 @@ const projects = [
     tags: ["Astro", "Tailwind CSS", "JavaScript"],
     github: null,
     demo: "https://pointsrambrouch.lu",
+    screenshot: `${THUM}https://pointsrambrouch.lu`,
     featured: false,
   },
   {
@@ -35,6 +40,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
     demo: "https://marque.lu/fr",
+    screenshot: `${THUM}https://marque.lu/fr`,
     featured: false,
   },
   {
@@ -46,6 +52,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "E-commerce"],
     github: null,
     demo: "https://lbshop.lu/fr",
+    screenshot: `${THUM}https://lbshop.lu/fr`,
     featured: false,
   },
   {
@@ -57,6 +64,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL", "Tailwind CSS"],
     github: null,
     demo: "https://lbdigital.site/fr",
+    screenshot: `${THUM}https://lbdigital.site/fr`,
     featured: false,
   },
   {
@@ -68,6 +76,7 @@ const projects = [
     tags: ["Laravel", "PHP", "MySQL"],
     github: null,
     demo: "https://thill-loehr.lu",
+    screenshot: `${THUM}https://thill-loehr.lu`,
     featured: false,
   },
   {
@@ -79,6 +88,7 @@ const projects = [
     tags: ["WordPress", "PHP", "CSS3", "SEO"],
     github: null,
     demo: "https://www.sconduite57100.com",
+    screenshot: `${THUM}https://www.sconduite57100.com`,
     featured: false,
   },
 ];
@@ -117,8 +127,8 @@ export default function Projects() {
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    globalThis.addEventListener("keydown", handler);
+    return () => globalThis.removeEventListener("keydown", handler);
   }, [prev, next]);
 
   // Build ordered list: current card is center (index 1 on desktop)
@@ -151,9 +161,9 @@ export default function Projects() {
           </h2>
           {/* Progress dots */}
           <div className="flex justify-center gap-2 mt-6">
-            {projects.map((_, i) => (
+            {projects.map((proj, i) => (
               <button
-                key={i}
+                key={proj.title}
                 onClick={() => setCurrent(i)}
                 aria-label={`Projet ${i + 1}`}
                 className={`rounded-full transition-all duration-300 ${
@@ -168,6 +178,9 @@ export default function Projects() {
 
         {/* Carousel container */}
         <div
+          role="group"
+          aria-label="Carousel de projets"
+          tabIndex={-1}
           className="relative"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
@@ -230,6 +243,27 @@ export default function Projects() {
                       <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.06)] via-transparent to-[#06b6d4/0.04] pointer-events-none" />
                     )}
 
+                    {/* Screenshot image */}
+                    <div className="relative w-full h-44 overflow-hidden bg-[hsl(var(--muted))] shrink-0">
+                      <img
+                        src={project.screenshot}
+                        alt={`Aperçu de ${project.title}`}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--card))] via-transparent to-transparent opacity-60" />
+                      {/* Browser bar overlay */}
+                      <div className="absolute top-0 left-0 right-0 h-6 bg-[hsl(var(--muted)/0.8)] backdrop-blur-sm flex items-center px-3 gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-red-400 opacity-70" />
+                        <div className="w-2 h-2 rounded-full bg-yellow-400 opacity-70" />
+                        <div className="w-2 h-2 rounded-full bg-green-400 opacity-70" />
+                        <div className="flex-1 mx-2 h-3 rounded bg-[hsl(var(--border))] text-[9px] text-[hsl(var(--muted-foreground))] flex items-center px-2 overflow-hidden">
+                          {project.demo}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Featured badge */}
                     {project.featured && (
                       <div className="px-5 pt-4 relative z-10">
@@ -282,7 +316,7 @@ export default function Projects() {
                               hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))]
                               text-[hsl(var(--muted-foreground))] transition-all duration-200"
                           >
-                            <Github className="h-3.5 w-3.5" />
+                            <GitHubIcon className="h-3.5 w-3.5" />
                             {t.view_code[lang]}
                           </a>
                         )}

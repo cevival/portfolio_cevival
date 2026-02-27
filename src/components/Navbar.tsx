@@ -38,7 +38,7 @@ export default function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <a
-          href="#"
+          href="#hero"
           className="font-bold text-lg text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))] transition-colors"
         >
           GD<span className="text-[hsl(var(--primary))]">.</span>

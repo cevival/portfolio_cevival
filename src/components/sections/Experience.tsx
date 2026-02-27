@@ -70,8 +70,8 @@ export default function Experience() {
           <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500 via-purple-500 to-transparent" />
 
           <div className="space-y-10">
-            {experiences.map((exp, i) => (
-              <div key={i} className="relative pl-20">
+            {experiences.map((exp) => (
+              <div key={exp.company} className="relative pl-20">
                 {/* Dot */}
                 <div className="absolute left-6 top-6 w-5 h-5 rounded-full bg-[hsl(var(--primary))] border-4 border-[hsl(var(--background))] shadow-md -translate-x-1/2 shadow-[0_0_8px_2px_hsl(var(--primary)/0.5)]" />
 

@@ -1,5 +1,6 @@
 import React from "react";
-import { Mail, Github, Linkedin, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
@@ -14,7 +15,7 @@ const contactLinks = [
     bg: "bg-red-500/10",
   },
   {
-    icon: Github,
+    icon: GitHubIcon,
     label_key: "github_label",
     href: "https://github.com/cevival",
     display: "github.com/cevival",
@@ -22,7 +23,7 @@ const contactLinks = [
     bg: "bg-[hsl(var(--muted))]",
   },
   {
-    icon: Linkedin,
+    icon: LinkedInIcon,
     label_key: "linkedin_label",
     href: "https://www.linkedin.com/in/guillaume-desplan",
     display: "linkedin.com/in/guillaume-desplan",
