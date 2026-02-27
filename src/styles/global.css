@@ -19,73 +19,149 @@
       "calt" 1;
   }
 
+  /* ─── LIGHT MODE ─── */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 250 20% 98%;
+    --foreground: 250 30% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --border: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --card-foreground: 250 30% 8%;
+    --primary: 262 80% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 30% 93%;
+    --secondary-foreground: 262 40% 20%;
+    --muted: 255 20% 93%;
+    --muted-foreground: 255 15% 45%;
+    --accent: 270 60% 90%;
+    --accent-foreground: 262 60% 25%;
+    --border: 260 20% 86%;
+    --ring: 262 80% 58%;
+    --radius: 0.6rem;
+    --glow: 262 80% 58%;
   }
 
+  /* ─── DARK MODE ─── */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 217.2 32.6% 11%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --background: 240 20% 5%;
+    --foreground: 240 15% 95%;
+    --card: 248 22% 9%;
+    --card-foreground: 240 15% 95%;
+    --primary: 262 85% 68%;
+    --primary-foreground: 240 20% 5%;
+    --secondary: 252 20% 14%;
+    --secondary-foreground: 240 15% 90%;
+    --muted: 250 18% 13%;
+    --muted-foreground: 248 12% 58%;
+    --accent: 270 40% 18%;
+    --accent-foreground: 262 80% 80%;
+    --border: 252 18% 18%;
+    --ring: 262 85% 68%;
+    --glow: 262 85% 68%;
   }
 }
 
+/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: hsl(var(--background));
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary));
+  background: linear-gradient(to bottom, hsl(var(--primary)), #06b6d4);
   border-radius: 3px;
 }
 
+/* ─── SCROLL MARGIN ─── */
 section {
   scroll-margin-top: 4rem;
 }
 
+/* ─── GRADIENT TEXT ─── */
 .gradient-text {
-  background: linear-gradient(135deg, hsl(var(--primary)), #a855f7);
+  background: linear-gradient(135deg, hsl(var(--primary)), #06b6d4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* ─── GLOW EFFECTS ─── */
+.glow-primary {
+  box-shadow: 0 0 20px -4px hsl(var(--primary) / 0.5);
+}
+.glow-primary-lg {
+  box-shadow:
+    0 0 40px -8px hsl(var(--primary) / 0.4),
+    0 0 80px -20px hsl(var(--primary) / 0.2);
+}
+.text-glow {
+  text-shadow: 0 0 20px hsl(var(--primary) / 0.6);
+}
+
+/* ─── FUTURISTIC GRID BACKGROUND ─── */
+.grid-bg {
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── SCANLINE EFFECT ─── */
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    hsl(var(--primary) / 0.015) 2px,
+    hsl(var(--primary) / 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── CARD HOVER ─── */
 .card-hover {
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.12),
+    0 0 0 1px hsl(var(--primary) / 0.2);
 }
 .dark .card-hover:hover {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.5),
+    0 0 20px -4px hsl(var(--primary) / 0.3);
+}
+
+/* ─── FUTURISTIC BORDER ─── */
+.border-glow {
+  border-color: hsl(var(--primary) / 0.4);
+  box-shadow:
+    0 0 12px -2px hsl(var(--primary) / 0.25),
+    inset 0 0 12px -8px hsl(var(--primary) / 0.1);
+}
+
+/* ─── NEON BADGE ─── */
+.badge-neon {
+  background: hsl(var(--primary) / 0.15);
+  border-color: hsl(var(--primary) / 0.35);
+  color: hsl(var(--primary));
+  box-shadow: 0 0 8px -2px hsl(var(--primary) / 0.3);
+}
+.dark .badge-neon {
+  box-shadow: 0 0 10px -2px hsl(var(--primary) / 0.5);
+}
+
+/* ─── CAROUSEL ─── */
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
 }

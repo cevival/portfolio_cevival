@@ -16,8 +16,9 @@ export default function Hero() {
     >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[hsl(var(--primary)/0.08)] rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#06b6d4]/[0.05] rounded-full blur-3xl" />
+        <div className="absolute inset-0 grid-bg opacity-40" />
       </div>
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -91,7 +92,7 @@ export default function Hero() {
             <Github className="h-5 w-5" />
           </a>
           <a
-            href="https://www.linkedin.com/in/guillaume-desplan"
+            href="https://www.linkedin.com/in/guillaume-desplan-36008a2a2"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"

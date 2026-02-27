@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "../ui/badge";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
@@ -52,7 +51,7 @@ export default function Skills() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
@@ -70,16 +69,26 @@ export default function Skills() {
             return (
               <div
                 key={key}
-                className="p-6 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm"
+                className="relative p-6 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm overflow-hidden card-hover group"
               >
-                <h3 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4 pb-3 border-b border-[hsl(var(--border))]">
+                {/* Glow on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.5)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <h3 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4 pb-3 border-b border-[hsl(var(--border))] relative z-10">
                   {label[lang]}
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 relative z-10">
                   {skills.map((skill) => (
-                    <Badge key={skill} variant="tech">
+                    <span
+                      key={skill}
+                      className="text-xs px-2.5 py-0.5 rounded-full
+                        bg-[hsl(var(--primary)/0.1)] border border-[hsl(var(--primary)/0.2)]
+                        text-[hsl(var(--primary))] font-medium
+                        hover:bg-[hsl(var(--primary)/0.2)] hover:shadow-[0_0_8px_-2px_hsl(var(--primary)/0.5)]
+                        transition-all duration-150 cursor-default"
+                    >
                       {skill}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               </div>

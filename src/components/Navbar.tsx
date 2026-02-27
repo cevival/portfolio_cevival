@@ -39,9 +39,9 @@ export default function Navbar() {
         {/* Logo */}
         <a
           href="#"
-          className="font-bold text-lg text-[hsl(var(--foreground))] hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="font-bold text-lg text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))] transition-colors"
         >
-          GD<span className="text-blue-600 dark:text-blue-400">.</span>
+          GD<span className="text-[hsl(var(--primary))]">.</span>
         </a>
 
         {/* Desktop links */}
@@ -63,7 +63,7 @@ export default function Navbar() {
           {/* Language toggle */}
           <button
             onClick={toggleLang}
-            className="text-xs font-semibold px-2 py-1 rounded border border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--foreground))] transition-colors"
+            className="text-xs font-semibold px-2 py-1 rounded border border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))] transition-colors"
             aria-label="Switch language"
           >
             {lang === "fr" ? "EN" : "FR"}

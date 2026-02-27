@@ -1,15 +1,5 @@
-import React from "react";
-import { ExternalLink, Github } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
@@ -97,85 +87,235 @@ export default function Projects() {
   const { lang } = useLang();
   const t = translations.projects;
 
+  const [current, setCurrent] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const total = projects.length;
+  const VISIBLE = 3; // cards visible at once on desktop
+
+  const prev = useCallback(() => {
+    setCurrent((c) => (c - 1 + total) % total);
+  }, [total]);
+
+  const next = useCallback(() => {
+    setCurrent((c) => (c + 1) % total);
+  }, [total]);
+
+  // Auto-advance
+  useEffect(() => {
+    if (isPaused) return;
+    intervalRef.current = setInterval(next, 4000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isPaused, next]);
+
+  // Keyboard
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [prev, next]);
+
+  // Build ordered list: current card is center (index 1 on desktop)
+  const getVisible = () => {
+    const indices: number[] = [];
+    for (let i = 0; i < VISIBLE; i++) {
+      indices.push((current + i) % total);
+    }
+    return indices;
+  };
+
+  const visibleIndices = getVisible();
+
   return (
-    <section id="projects" className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
+    <section id="projects" className="py-24 px-6 overflow-hidden relative">
+      {/* Bg grid */}
+      <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
+
+      {/* Purple glow blob */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[hsl(var(--primary))/0.06] rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+        <div className="text-center mb-14">
+          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-widest mb-2">
             {t.title[lang]}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
+          <h2 className="text-3xl md:text-5xl font-bold text-[hsl(var(--foreground))]">
             {t.subtitle[lang]}
           </h2>
+          {/* Progress dots */}
+          <div className="flex justify-center gap-2 mt-6">
+            {projects.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                aria-label={`Projet ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === current
+                    ? "w-8 h-2 bg-[hsl(var(--primary))] shadow-[0_0_8px_2px_hsl(var(--primary)/0.5)]"
+                    : "w-2 h-2 bg-[hsl(var(--border))] hover:bg-[hsl(var(--primary)/0.5)]"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card
-              key={project.title}
-              className={`card-hover flex flex-col ${
-                project.featured
-                  ? "border-blue-500/40 dark:border-blue-500/30 shadow-blue-500/10"
-                  : ""
-              }`}
-            >
-              {/* Featured badge */}
-              {project.featured && (
-                <div className="px-6 pt-4">
-                  <Badge variant="default" className="text-xs">
-                    ⭐ Featured
-                  </Badge>
+        {/* Carousel container */}
+        <div
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {/* Left arrow */}
+          <button
+            onClick={prev}
+            aria-label="Projet précédent"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 -translate-x-2 md:-translate-x-6
+              w-11 h-11 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))]
+              flex items-center justify-center
+              hover:border-[hsl(var(--primary))] hover:shadow-[0_0_12px_2px_hsl(var(--primary)/0.35)]
+              transition-all duration-200 group"
+          >
+            <ChevronLeft className="h-5 w-5 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))]" />
+          </button>
+
+          {/* Right arrow */}
+          <button
+            onClick={next}
+            aria-label="Projet suivant"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 translate-x-2 md:translate-x-6
+              w-11 h-11 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))]
+              flex items-center justify-center
+              hover:border-[hsl(var(--primary))] hover:shadow-[0_0_12px_2px_hsl(var(--primary)/0.35)]
+              transition-all duration-200 group"
+          >
+            <ChevronRight className="h-5 w-5 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))]" />
+          </button>
+
+          {/* Cards track */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-8 md:px-14">
+            {visibleIndices.map((projectIdx, position) => {
+              const project = projects[projectIdx];
+              const isCenter = position === 1;
+              return (
+                <div
+                  key={`${projectIdx}-${position}`}
+                  className={`transition-all duration-500 ${
+                    isCenter
+                      ? "md:scale-105 z-10"
+                      : "md:scale-95 opacity-70 md:opacity-60"
+                  }`}
+                >
+                  {/* ─── The div style you specified ─── */}
+                  <div
+                    className={`relative rounded-xl border border-[hsl(var(--border)/0.5)] bg-[hsl(var(--card))] shadow-2xl overflow-hidden h-full flex flex-col
+                      transition-all duration-300
+                      ${isCenter ? "border-glow glow-primary-lg" : "hover:border-[hsl(var(--border))]"}`}
+                  >
+                    {/* Top accent line */}
+                    <div
+                      className={`h-px w-full bg-gradient-to-r from-transparent via-[hsl(var(--primary))] to-transparent ${
+                        isCenter ? "opacity-100" : "opacity-30"
+                      }`}
+                    />
+
+                    {/* Card glow bg */}
+                    {isCenter && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.06)] via-transparent to-[#06b6d4/0.04] pointer-events-none" />
+                    )}
+
+                    {/* Featured badge */}
+                    {project.featured && (
+                      <div className="px-5 pt-4 relative z-10">
+                        <span className="badge-neon text-xs font-semibold px-2.5 py-0.5 rounded-full border inline-flex items-center gap-1">
+                          ⭐ Featured
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="p-5 flex-1 flex flex-col relative z-10">
+                      {/* Title + counter */}
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="font-bold text-lg text-[hsl(var(--foreground))] leading-tight">
+                          {project.title}
+                        </h3>
+                        <span className="text-xs text-[hsl(var(--muted-foreground))] shrink-0 font-mono mt-0.5">
+                          {String(projectIdx + 1).padStart(2, "0")}/
+                          {String(total).padStart(2, "0")}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed flex-1 mb-4">
+                        {project.description[lang]}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-5">
+                        {project.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-xs px-2 py-0.5 rounded-md
+                              bg-[hsl(var(--primary)/0.1)] border border-[hsl(var(--primary)/0.2)]
+                              text-[hsl(var(--primary))] font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Buttons */}
+                      <div className="flex gap-2 mt-auto">
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg
+                              border border-[hsl(var(--border))] bg-transparent
+                              hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))]
+                              text-[hsl(var(--muted-foreground))] transition-all duration-200"
+                          >
+                            <Github className="h-3.5 w-3.5" />
+                            {t.view_code[lang]}
+                          </a>
+                        )}
+                        {project.demo && (
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg
+                              bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]
+                              hover:shadow-[0_0_16px_-2px_hsl(var(--primary)/0.7)]
+                              transition-all duration-200"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            {t.view_demo[lang]}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom shimmer */}
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
+                  </div>
                 </div>
-              )}
-
-              <CardHeader>
-                <CardTitle className="text-xl">{project.title}</CardTitle>
-                <CardDescription className="text-sm leading-relaxed">
-                  {project.description[lang]}
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="flex-1">
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="tech">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-
-              <CardFooter className="gap-3">
-                {project.github && (
-                  <Button variant="outline" size="sm" className="gap-2" asChild>
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github className="h-4 w-4" />
-                      {t.view_code[lang]}
-                    </a>
-                  </Button>
-                )}
-                {project.demo && (
-                  <Button size="sm" className="gap-2" asChild>
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      {t.view_demo[lang]}
-                    </a>
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          ))}
+              );
+            })}
+          </div>
         </div>
+
+        {/* Counter text */}
+        <p className="text-center text-xs text-[hsl(var(--muted-foreground))] mt-8 font-mono">
+          {current + 1} / {total}
+        </p>
       </div>
     </section>
   );

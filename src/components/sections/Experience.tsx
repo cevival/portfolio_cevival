@@ -9,13 +9,13 @@ const experiences = [
       en: "Full-Stack Web Developer (Apprenticeship)",
     },
     company: "LB Digital — Luxembourg",
-    period: { fr: "Sept. 2024 – Présent", en: "Sept. 2024 – Present" },
+    period: { fr: "Oct. 2025 – Présent", en: "Oct. 2025 – Present" },
     description: {
       fr: "Développement et mise en production de plusieurs sites clients en Laravel et Astro. Réalisation de marque.lu, lbshop.lu, lbdigital.site, pointsrambrouch.lu et thill-loehr.lu. Intégration de maquettes, développement back-end, déploiement et maintenance.",
       en: "Development and production deployment of multiple client websites in Laravel and Astro. Delivered marque.lu, lbshop.lu, lbdigital.site, pointsrambrouch.lu, and thill-loehr.lu. UI integration, back-end development, deployment, and maintenance.",
     },
-    tags: ["Laravel", "Astro", "PHP", "Tailwind CSS", "MySQL"],
-    link: "https://lbdigital.site/fr",
+    tags: ["Laravel", "Astro", "Tailwind CSS", "MySQL", "SEO"],
+    link: "https://lbdigital.lu/fr",
   },
   {
     role: {
@@ -23,12 +23,12 @@ const experiences = [
       en: "Web Developer (2nd Year Internship)",
     },
     company: "Synapsia",
-    period: { fr: "2024", en: "2024" },
+    period: { fr: "2025", en: "2025" },
     description: {
       fr: "Conception et développement d'une web app interne de gestion des heures pour l'entreprise. Application complète avec authentification, saisie des temps et tableau de bord de suivi.",
       en: "Design and development of an internal time-tracking web application for the company. Full app with authentication, time entry, and monitoring dashboard.",
     },
-    tags: ["React", "Node.js", "Express", "PostgreSQL"],
+    tags: ["PHP", "SCSS", "MysSQL"],
     link: null,
   },
   {
@@ -37,12 +37,12 @@ const experiences = [
       en: "Web Developer (1st Year Internship)",
     },
     company: "Auto-école SC Conduite",
-    period: { fr: "2023", en: "2023" },
+    period: { fr: "2024", en: "2024" },
     description: {
       fr: "Conception et réalisation du site web de l'auto-école sous WordPress. Création du thème, intégration des contenus, référencement et mise en ligne.",
       en: "Design and development of the driving school website using WordPress. Theme creation, content integration, SEO, and deployment.",
     },
-    tags: ["WordPress", "PHP", "CSS3", "SEO"],
+    tags: ["WordPress", "SEO"],
     link: "https://www.sconduite57100.com",
   },
 ];
@@ -56,7 +56,7 @@ export default function Experience() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
@@ -73,7 +73,7 @@ export default function Experience() {
             {experiences.map((exp, i) => (
               <div key={i} className="relative pl-20">
                 {/* Dot */}
-                <div className="absolute left-6 top-6 w-5 h-5 rounded-full bg-blue-600 dark:bg-blue-400 border-4 border-[hsl(var(--background))] shadow-md -translate-x-1/2" />
+                <div className="absolute left-6 top-6 w-5 h-5 rounded-full bg-[hsl(var(--primary))] border-4 border-[hsl(var(--background))] shadow-md -translate-x-1/2 shadow-[0_0_8px_2px_hsl(var(--primary)/0.5)]" />
 
                 {/* Card */}
                 <div className="p-6 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm card-hover">
@@ -82,7 +82,7 @@ export default function Experience() {
                       <h3 className="font-bold text-lg text-[hsl(var(--foreground))]">
                         {exp.role[lang]}
                       </h3>
-                      <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">
+                      <p className="text-[hsl(var(--primary))] font-medium text-sm">
                         {exp.company}
                       </p>
                     </div>

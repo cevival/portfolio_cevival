@@ -27,7 +27,7 @@ export default function About() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
@@ -39,12 +39,12 @@ export default function About() {
           {/* Avatar placeholder */}
           <div className="flex justify-center">
             <div className="relative">
-              <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-7xl font-bold shadow-2xl">
+              <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[#06b6d4] flex items-center justify-center text-white text-7xl font-bold shadow-2xl glow-primary-lg">
                 GD
               </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-lg flex items-center justify-center">
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--primary)/0.3)] shadow-lg glow-primary flex items-center justify-center">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  <p className="text-2xl font-bold text-[hsl(var(--primary))]">
                     3+
                   </p>
                   <p className="text-xs text-[hsl(var(--muted-foreground))]">
@@ -71,7 +71,7 @@ export default function About() {
                   key={label}
                   className="flex items-center gap-4 p-4 rounded-lg bg-[hsl(var(--muted))] border border-[hsl(var(--border))]"
                 >
-                  <div className="p-2 rounded-md bg-blue-600/10 text-blue-600 dark:text-blue-400">
+                  <div className="p-2 rounded-md bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]">
                     <Icon className="h-4 w-4" />
                   </div>
                   <div>

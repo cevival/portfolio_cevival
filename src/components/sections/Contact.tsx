@@ -40,7 +40,7 @@ export default function Contact() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
@@ -60,7 +60,7 @@ export default function Contact() {
                 href={href}
                 target={href.startsWith("mailto") ? undefined : "_blank"}
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-5 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:border-blue-500/50 hover:shadow-md transition-all group card-hover"
+                className="flex items-center gap-4 p-5 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.5)] hover:shadow-[0_0_16px_-4px_hsl(var(--primary)/0.3)] transition-all group card-hover"
               >
                 <div className={`p-3 rounded-xl ${bg}`}>
                   <Icon className={`h-5 w-5 ${color}`} />
@@ -73,7 +73,7 @@ export default function Contact() {
                     {display}
                   </p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))] group-hover:translate-x-1 transition-all" />
               </a>
             ),
           )}
