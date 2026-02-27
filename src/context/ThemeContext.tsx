@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 
 type Theme = "light" | "dark";
 
@@ -12,7 +19,9 @@ const ThemeContext = createContext<ThemeContextType>({
   toggle: () => {},
 });
 
-export function ThemeProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+export function ThemeProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {

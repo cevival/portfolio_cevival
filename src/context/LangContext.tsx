@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import type { Lang } from "../i18n/translations";
 
 interface LangContextType {
@@ -11,7 +18,9 @@ const LangContext = createContext<LangContextType>({
   toggle: () => {},
 });
 
-export function LangProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+export function LangProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const [lang, setLang] = useState<Lang>("fr");
 
   useEffect(() => {
@@ -30,9 +39,7 @@ export function LangProvider({ children }: Readonly<{ children: React.ReactNode 
   const contextValue = useMemo(() => ({ lang, toggle }), [lang, toggle]);
 
   return (
-    <LangContext.Provider value={contextValue}>
-      {children}
-    </LangContext.Provider>
+    <LangContext.Provider value={contextValue}>{children}</LangContext.Provider>
   );
 }
 
