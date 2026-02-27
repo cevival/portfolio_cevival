@@ -8,8 +8,8 @@ const contactLinks = [
   {
     icon: Mail,
     label_key: "email_label",
-    href: "mailto:guillaume.desplan@email.com",
-    display: "guillaume.desplan@email.com",
+    href: "mailto:desplan.guillaume33@gmail.com",
+    display: "desplan.guillaume33@gmail.com",
     color: "text-red-500 dark:text-red-400",
     bg: "bg-red-500/10",
   },
@@ -24,7 +24,7 @@ const contactLinks = [
   {
     icon: Linkedin,
     label_key: "linkedin_label",
-    href: "https://linkedin.com/in/guillaume-desplan",
+    href: "https://www.linkedin.com/in/guillaume-desplan",
     display: "linkedin.com/in/guillaume-desplan",
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-500/10",
@@ -82,7 +82,7 @@ export default function Contact() {
         {/* CTA */}
         <div className="text-center">
           <Button size="lg" className="gap-2" asChild>
-            <a href="mailto:guillaume.desplan@email.com">
+            <a href="mailto:desplan.guillaume33@gmail.com">
               <Mail className="h-4 w-4" />
               {t.email_label[lang]}
             </a>

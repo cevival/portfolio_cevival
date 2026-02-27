@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, Briefcase, Languages } from "lucide-react";
+import { MapPin, Briefcase, Languages, GraduationCap } from "lucide-react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
@@ -10,6 +10,11 @@ export default function About() {
   const info = [
     { icon: MapPin, label: t.location[lang], value: t.location_val[lang] },
     { icon: Briefcase, label: t.status[lang], value: t.status_val[lang] },
+    {
+      icon: GraduationCap,
+      label: t.formation[lang],
+      value: t.formation_val[lang],
+    },
     {
       icon: Languages,
       label: t.languages_label[lang],

@@ -91,7 +91,7 @@ export default function Hero() {
             <Github className="h-5 w-5" />
           </a>
           <a
-            href="https://linkedin.com/in/guillaume-desplan"
+            href="https://www.linkedin.com/in/guillaume-desplan"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
@@ -100,7 +100,7 @@ export default function Hero() {
             <Linkedin className="h-5 w-5" />
           </a>
           <a
-            href="mailto:guillaume.desplan@email.com"
+            href="mailto:desplan.guillaume33@gmail.com"
             className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
             aria-label="Email"
           >

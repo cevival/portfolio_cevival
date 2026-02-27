@@ -4,37 +4,46 @@ import { translations } from "../../i18n/translations";
 
 const experiences = [
   {
-    role: { fr: "Développeur Full-Stack", en: "Full-Stack Developer" },
-    company: "Freelance",
-    period: { fr: "2023 – Présent", en: "2023 – Present" },
-    description: {
-      fr: "Conception et développement d'applications web sur mesure pour divers clients. Architecture back-end, intégration d'API et interfaces utilisateur modernes.",
-      en: "Design and development of custom web applications for various clients. Back-end architecture, API integration, and modern user interfaces.",
+    role: {
+      fr: "Développeur Web Full-Stack (Alternance)",
+      en: "Full-Stack Web Developer (Apprenticeship)",
     },
-    tags: ["React", "Node.js", "PostgreSQL", "Vercel"],
-  },
-  {
-    role: { fr: "Développeur Front-end", en: "Front-end Developer" },
-    company: "Startup Tech",
-    period: { fr: "2022 – 2023", en: "2022 – 2023" },
+    company: "LB Digital — Luxembourg",
+    period: { fr: "Sept. 2024 – Présent", en: "Sept. 2024 – Present" },
     description: {
-      fr: "Développement de l'interface utilisateur d'une plateforme SaaS. Collaboration en équipe Agile, revues de code et amélioration des performances.",
-      en: "Development of the user interface for a SaaS platform. Agile team collaboration, code reviews, and performance improvements.",
+      fr: "Développement et mise en production de plusieurs sites clients en Laravel et Astro. Réalisation de marque.lu, lbshop.lu, lbdigital.site, pointsrambrouch.lu et thill-loehr.lu. Intégration de maquettes, développement back-end, déploiement et maintenance.",
+      en: "Development and production deployment of multiple client websites in Laravel and Astro. Delivered marque.lu, lbshop.lu, lbdigital.site, pointsrambrouch.lu, and thill-loehr.lu. UI integration, back-end development, deployment, and maintenance.",
     },
-    tags: ["Vue.js", "TypeScript", "Tailwind CSS", "REST API"],
+    tags: ["Laravel", "Astro", "PHP", "Tailwind CSS", "MySQL"],
+    link: "https://lbdigital.site/fr",
   },
   {
     role: {
-      fr: "Alternant Développeur Web",
-      en: "Web Developer (Apprenticeship)",
+      fr: "Développeur Web (Stage 2ème année)",
+      en: "Web Developer (2nd Year Internship)",
     },
-    company: "Agence Web",
-    period: { fr: "2020 – 2022", en: "2020 – 2022" },
+    company: "Synapsia",
+    period: { fr: "2024", en: "2024" },
     description: {
-      fr: "Développement de sites web pour des PME. Création de thèmes WordPress, intégration de maquettes et maintenance applicative.",
-      en: "Website development for SMBs. WordPress theme creation, design integration, and application maintenance.",
+      fr: "Conception et développement d'une web app interne de gestion des heures pour l'entreprise. Application complète avec authentification, saisie des temps et tableau de bord de suivi.",
+      en: "Design and development of an internal time-tracking web application for the company. Full app with authentication, time entry, and monitoring dashboard.",
     },
-    tags: ["WordPress", "JavaScript", "PHP", "CSS3"],
+    tags: ["React", "Node.js", "Express", "PostgreSQL"],
+    link: null,
+  },
+  {
+    role: {
+      fr: "Développeur Web (Stage 1ère année)",
+      en: "Web Developer (1st Year Internship)",
+    },
+    company: "Auto-école SC Conduite",
+    period: { fr: "2023", en: "2023" },
+    description: {
+      fr: "Conception et réalisation du site web de l'auto-école sous WordPress. Création du thème, intégration des contenus, référencement et mise en ligne.",
+      en: "Design and development of the driving school website using WordPress. Theme creation, content integration, SEO, and deployment.",
+    },
+    tags: ["WordPress", "PHP", "CSS3", "SEO"],
+    link: "https://www.sconduite57100.com",
   },
 ];
 
@@ -86,15 +95,27 @@ export default function Experience() {
                     {exp.description[lang]}
                   </p>
 
-                  <div className="flex flex-wrap gap-2">
-                    {exp.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-2 py-0.5 rounded-md bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border))]"
+                  <div className="flex flex-wrap gap-2 items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {exp.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs px-2 py-0.5 rounded-md bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border))]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    {exp.link && (
+                      <a
+                        href={exp.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 shrink-0"
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        Voir le site →
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

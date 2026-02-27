@@ -26,19 +26,24 @@ export const translations = {
     title: { fr: "À propos", en: "About" },
     subtitle: { fr: "Qui suis-je ?", en: "Who am I?" },
     p1: {
-      fr: "Développeur Full-Stack passionné, je crée des expériences numériques complètes, du back-end robuste aux interfaces utilisateur soignées. J'aime relever des défis techniques complexes et apporter une vraie valeur à chaque projet.",
-      en: "Passionate Full-Stack Developer, I craft complete digital experiences — from solid back-end architecture to polished user interfaces. I love tackling complex technical challenges and delivering real value with every project.",
+      fr: "Développeur Full-Stack en alternance chez LB Digital (Luxembourg), je suis actuellement en 3ème année de Bachelor Informatique à la Metz Numeric School. Je conçois et développe des applications web complètes, du back-end (Laravel, Node.js) aux interfaces modernes (React, Astro, Tailwind CSS).",
+      en: "Full-Stack Developer on a work-study contract at LB Digital (Luxembourg), currently in my 3rd year of a Computer Science Bachelor's at Metz Numeric School. I design and build complete web applications — from back-end (Laravel, Node.js) to modern front-end (React, Astro, Tailwind CSS).",
     },
     p2: {
-      fr: "Curieux et en apprentissage constant, je m'intéresse aussi bien aux nouvelles technologies qu'aux bonnes pratiques du développement logiciel (clean code, tests, CI/CD).",
-      en: "Curious and always learning, I keep up with new technologies and software craftsmanship best practices (clean code, testing, CI/CD).",
+      fr: "Passionné par les nouvelles technologies et les bonnes pratiques (clean code, CI/CD, performance), j'ai déjà livré plusieurs sites en production pour des clients réels au Luxembourg et en France.",
+      en: "Passionate about new technologies and best practices (clean code, CI/CD, performance), I have already delivered several production sites for real clients in Luxembourg and France.",
     },
     location: { fr: "Localisation", en: "Location" },
-    location_val: { fr: "France", en: "France" },
+    location_val: { fr: "Metz, France", en: "Metz, France" },
     status: { fr: "Statut", en: "Status" },
-    status_val: { fr: "Disponible", en: "Available" },
+    status_val: { fr: "Alternant @ LB Digital", en: "Apprentice @ LB Digital" },
     languages_label: { fr: "Langues", en: "Languages" },
     languages_val: { fr: "Français, Anglais", en: "French, English" },
+    formation: { fr: "Formation", en: "Education" },
+    formation_val: {
+      fr: "Bachelor Informatique — Metz Numeric School",
+      en: "Computer Science Bachelor — Metz Numeric School",
+    },
   },
   skills: {
     title: { fr: "Compétences", en: "Skills" },
@@ -68,6 +73,7 @@ export const translations = {
     email_label: { fr: "Envoyer un email", en: "Send an email" },
     github_label: { fr: "Voir GitHub", en: "View GitHub" },
     linkedin_label: { fr: "LinkedIn", en: "LinkedIn" },
+    school_label: { fr: "Voir ma formation", en: "View my education" },
   },
   footer: {
     made_with: { fr: "Fait avec", en: "Made with" },
