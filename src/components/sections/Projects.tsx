@@ -92,6 +92,18 @@ const projects = [
     screenshot: THUM("https://www.sconduite57100.com"),
     featured: false,
   },
+  {
+    title: "Un Jour de Rien",
+    description: {
+      fr: "Site de présentation d'une pièce de théâtre avec back-office complet : gestion des articles, modification de la page À propos, gestion de l'équipe, et système de réservation en ligne.",
+      en: "Theatre play showcase website with a full back-office: article management, About page editing, team management, and an online booking system.",
+    },
+    tags: ["Laravel", "Inertia.js", "React", "Tailwind CSS", "PHP"],
+    github: null,
+    demo: "https://jourderien.fr",
+    screenshot: THUM("https://jourderien.fr"),
+    featured: false,
+  },
 ];
 
 export default function Projects() {
