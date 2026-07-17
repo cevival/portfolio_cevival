@@ -14,6 +14,14 @@ import { translations } from "../../i18n/translations";
 
 const HeroScene = lazy(() => import("../three/HeroScene"));
 
+/** Scrolls to an anchor through Lenis when active (inertial), else natively. */
+function scrollToId(id: string) {
+  const lenis = (window as unknown as { lenis?: { scrollTo: (t: string) => void } })
+    .lenis;
+  if (lenis) lenis.scrollTo(`#${id}`);
+  else document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
 /**
  * The 3D scene is decorative: if it fails to load (WebGL unavailable, stale
  * dev cache, network error), render nothing instead of crashing the page.
@@ -186,11 +194,7 @@ export default function Hero() {
         >
           <Button
             size="lg"
-            onClick={() =>
-              document
-                .getElementById("projects")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+            onClick={() => scrollToId("projects")}
             className="gap-2"
           >
             <Sparkles className="h-4 w-4" />
@@ -199,11 +203,7 @@ export default function Hero() {
           <Button
             size="lg"
             variant="outline"
-            onClick={() =>
-              document
-                .getElementById("contact")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+            onClick={() => scrollToId("contact")}
           >
             {t.cta_contact[lang]}
           </Button>

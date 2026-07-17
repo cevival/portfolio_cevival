@@ -3,7 +3,8 @@ import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "../context/ThemeContext";
 import { LangProvider } from "../context/LangContext";
 import Navbar from "./Navbar";
-import { ScrollProgress } from "./motion/ScrollProgress";
+import { SmoothScroll } from "./motion/SmoothScroll";
+import { Cursor } from "./motion/Cursor";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Skills from "./sections/Skills";
@@ -17,7 +18,8 @@ export default function Portfolio() {
       <ThemeProvider>
         <LangProvider>
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-          <ScrollProgress />
+          <SmoothScroll />
+          <Cursor />
           <Navbar />
           <main>
             <Hero />
