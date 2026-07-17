@@ -78,10 +78,10 @@ export default function Hero() {
         <div className="absolute inset-0 grid-bg opacity-40" />
       </div>
 
-      {/* 3D WebGL scene (client only, skipped for reduced motion) */}
-      {mounted && !reduced && (
+      {/* 3D WebGL scene (client only; static single frame for reduced motion) */}
+      {mounted && (
         <Suspense fallback={null}>
-          <HeroScene />
+          <HeroScene reducedMotion={!!reduced} />
         </Suspense>
       )}
 

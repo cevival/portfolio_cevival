@@ -8,11 +8,11 @@ const VIOLET = "#8b5cf6";
 const CYAN = "#06b6d4";
 
 /** Distorted wireframe icosahedron slowly rotating, leaning towards the cursor. */
-function CoreShape() {
+function CoreShape({ still }: { still?: boolean }) {
   const group = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
-    if (!group.current) return;
+    if (!group.current || still) return;
     group.current.rotation.y += delta * 0.15;
     group.current.rotation.x = THREE.MathUtils.damp(
       group.current.rotation.x,
@@ -29,8 +29,12 @@ function CoreShape() {
   });
 
   return (
-    <group ref={group}>
-      <Float speed={1.6} rotationIntensity={0.4} floatIntensity={0.8}>
+    <group ref={group} rotation={still ? [0.4, 0.6, 0] : undefined}>
+      <Float
+        speed={still ? 0 : 1.6}
+        rotationIntensity={still ? 0 : 0.4}
+        floatIntensity={still ? 0 : 0.8}
+      >
         <mesh>
           <icosahedronGeometry args={[1.9, 2]} />
           <MeshDistortMaterial
@@ -59,7 +63,7 @@ function CoreShape() {
 }
 
 /** Cyan/violet particle field orbiting slowly around the shape. */
-function Particles({ count = 350 }: { count?: number }) {
+function Particles({ count = 350, still }: { count?: number; still?: boolean }) {
   const points = useRef<THREE.Points>(null);
 
   const [positions, colors] = useMemo(() => {
@@ -84,7 +88,7 @@ function Particles({ count = 350 }: { count?: number }) {
   }, [count]);
 
   useFrame((state, delta) => {
-    if (!points.current) return;
+    if (!points.current || still) return;
     points.current.rotation.y += delta * 0.03;
     points.current.rotation.x = THREE.MathUtils.damp(
       points.current.rotation.x,
@@ -118,11 +122,18 @@ function Particles({ count = 350 }: { count?: number }) {
 /**
  * WebGL background of the hero section. Mounted client-side only (lazy),
  * pointer-events disabled so it never blocks the content above it.
+ * With `reducedMotion` the scene renders a single static frame (depth
+ * without movement) instead of animating.
  */
-export default function HeroScene() {
+export default function HeroScene({
+  reducedMotion = false,
+}: {
+  reducedMotion?: boolean;
+}) {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden>
       <Canvas
+        frameloop={reducedMotion ? "demand" : "always"}
         camera={{ position: [0, 0, 6.5], fov: 45 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true }}
@@ -132,8 +143,8 @@ export default function HeroScene() {
         <ambientLight intensity={0.6} />
         <pointLight position={[4, 4, 4]} intensity={30} color={CYAN} />
         <pointLight position={[-4, -3, 2]} intensity={25} color={VIOLET} />
-        <CoreShape />
-        <Particles />
+        <CoreShape still={reducedMotion} />
+        <Particles still={reducedMotion} />
       </Canvas>
     </div>
   );
