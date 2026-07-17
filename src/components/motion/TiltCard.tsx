@@ -33,6 +33,7 @@ export function TiltCard({
 
   const px = useMotionValue(0.5); // pointer position, 0..1
   const py = useMotionValue(0.5);
+  const glareOpacity = useMotionValue(0);
 
   const rotateX = useSpring(
     useTransform(py, [0, 1], [intensity, -intensity]),
@@ -52,31 +53,36 @@ export function TiltCard({
     const rect = ref.current.getBoundingClientRect();
     px.set((e.clientX - rect.left) / rect.width);
     py.set((e.clientY - rect.top) / rect.height);
+    glareOpacity.set(1);
   };
 
   const handleLeave = () => {
     px.set(0.5);
     py.set(0.5);
+    glareOpacity.set(0);
   };
 
+  // Style is always applied (identical on server and client, so hydration
+  // stays consistent); with reduced motion the values simply never change.
   return (
     <motion.div
       ref={ref}
       className={className}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      style={
-        reduced
-          ? undefined
-          : { rotateX, rotateY, transformStyle: "preserve-3d", transformPerspective: 900 }
-      }
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        transformPerspective: 900,
+      }}
     >
       {children}
-      {glare && !reduced && (
+      {glare && (
         <motion.div
           aria-hidden
           className="absolute inset-0 rounded-[inherit] pointer-events-none z-20"
-          style={{ background: glareBg }}
+          style={{ background: glareBg, opacity: glareOpacity }}
         />
       )}
     </motion.div>

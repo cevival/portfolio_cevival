@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useLang } from "../context/LangContext";
@@ -11,7 +11,6 @@ export default function Navbar() {
   const { theme, toggle: toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const reduced = useReducedMotion();
 
   const nav = translations.nav;
 
@@ -31,7 +30,7 @@ export default function Navbar() {
 
   return (
     <motion.header
-      initial={reduced ? false : { y: -72, opacity: 0 }}
+      initial={{ y: -72, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${

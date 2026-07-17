@@ -9,6 +9,23 @@ import { translations } from "../../i18n/translations";
 
 const HeroScene = lazy(() => import("../three/HeroScene"));
 
+/**
+ * The 3D scene is decorative: if it fails to load (WebGL unavailable, stale
+ * dev cache, network error), render nothing instead of crashing the page.
+ */
+class SceneBoundary extends React.Component<
+  { children: React.ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 /** Splits a word into letter spans so anime.js can animate them one by one. */
 function AnimatedWord({ word, className }: { word: string; className?: string }) {
   return (
@@ -55,7 +72,7 @@ export default function Hero() {
   }, [reduced]);
 
   const fadeUp = (delay: number) => ({
-    initial: reduced ? false : { opacity: 0, y: 26 },
+    initial: { opacity: 0, y: 26 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
   });
@@ -80,9 +97,11 @@ export default function Hero() {
 
       {/* 3D WebGL scene (client only; static single frame for reduced motion) */}
       {mounted && (
-        <Suspense fallback={null}>
-          <HeroScene reducedMotion={!!reduced} />
-        </Suspense>
+        <SceneBoundary>
+          <Suspense fallback={null}>
+            <HeroScene reducedMotion={!!reduced} />
+          </Suspense>
+        </SceneBoundary>
       )}
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -192,8 +211,8 @@ export default function Hero() {
               href={href}
               target={href.startsWith("mailto") ? undefined : "_blank"}
               rel="noopener noreferrer"
-              whileHover={reduced ? undefined : { scale: 1.15, y: -2 }}
-              whileTap={reduced ? undefined : { scale: 0.92 }}
+              whileHover={{ scale: 1.15, y: -2 }}
+              whileTap={{ scale: 0.92 }}
               className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
               aria-label={label}
             >

@@ -1,5 +1,5 @@
 import React from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 
 interface RevealProps {
   children: React.ReactNode;
@@ -12,7 +12,11 @@ interface RevealProps {
   className?: string;
 }
 
-/** Fade-up apparition when the element scrolls into view. */
+/**
+ * Fade-up apparition when the element scrolls into view.
+ * Reduced-motion handling comes from <MotionConfig reducedMotion="user">
+ * at the root: transforms are skipped, opacity still fades (SSR-consistent).
+ */
 export function Reveal({
   children,
   delay = 0,
@@ -20,12 +24,10 @@ export function Reveal({
   once = true,
   className,
 }: RevealProps) {
-  const reduced = useReducedMotion();
-
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, y }}
+      initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once, margin: "-80px" }}
       transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
@@ -44,12 +46,10 @@ interface StaggerProps {
 
 /** Container that reveals its <StaggerItem> children one after the other. */
 export function Stagger({ children, gap = 0.12, className }: StaggerProps) {
-  const reduced = useReducedMotion();
-
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : "hidden"}
+      initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
       variants={{

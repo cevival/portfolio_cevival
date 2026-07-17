@@ -1,4 +1,5 @@
 import React from "react";
+import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "../context/ThemeContext";
 import { LangProvider } from "../context/LangContext";
 import Navbar from "./Navbar";
@@ -11,8 +12,9 @@ import Contact from "./sections/Contact";
 
 export default function Portfolio() {
   return (
-    <ThemeProvider>
-      <LangProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <LangProvider>
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
           <Navbar />
           <main>
@@ -24,7 +26,8 @@ export default function Portfolio() {
             <Contact />
           </main>
         </div>
-      </LangProvider>
-    </ThemeProvider>
+        </LangProvider>
+      </ThemeProvider>
+    </MotionConfig>
   );
 }
