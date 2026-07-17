@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { motion, useScroll, useSpring } from "motion/react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 import { Reveal } from "../motion/Reveal";
@@ -53,6 +54,14 @@ export default function Experience() {
   const { lang } = useLang();
   const t = translations.experience;
 
+  // The vertical timeline line draws itself as the section scrolls into view
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 80%", "end 55%"],
+  });
+  const lineScale = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
+
   return (
     <section id="experience" className="py-24 px-6 bg-[hsl(var(--muted))]/50">
       <div className="max-w-6xl mx-auto">
@@ -67,9 +76,15 @@ export default function Experience() {
         </Reveal>
 
         {/* Timeline */}
-        <div className="relative max-w-3xl mx-auto">
-          {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500 via-purple-500 to-transparent" />
+        <div ref={timelineRef} className="relative max-w-3xl mx-auto">
+          {/* Vertical line — drawn on scroll */}
+          <div className="absolute left-8 top-0 bottom-0 w-px bg-[hsl(var(--border))]" />
+          <motion.div
+            className="absolute left-8 top-0 bottom-0 w-px origin-top
+              bg-gradient-to-b from-[#06b6d4] via-[hsl(var(--primary))] to-transparent
+              shadow-[0_0_8px_hsl(var(--primary)/0.6)]"
+            style={{ scaleY: lineScale }}
+          />
 
           <div className="space-y-10">
             {experiences.map((exp, i) => (

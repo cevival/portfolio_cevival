@@ -1,6 +1,11 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { ArrowDown, Mail, Sparkles } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { animate, stagger } from "animejs";
 import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
@@ -50,6 +55,17 @@ export default function Hero() {
   const reduced = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Scroll parallax: content drifts up and fades, scene zooms out slightly
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+  const sceneOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0]);
 
   useEffect(() => setMounted(true), []);
 
@@ -80,6 +96,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
+      ref={sectionRef}
       className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-16 overflow-hidden"
     >
       {/* Background decoration */}
@@ -99,12 +116,20 @@ export default function Hero() {
       {mounted && (
         <SceneBoundary>
           <Suspense fallback={null}>
-            <HeroScene reducedMotion={!!reduced} />
+            <motion.div
+              className="absolute inset-0"
+              style={{ scale: sceneScale, opacity: sceneOpacity }}
+            >
+              <HeroScene reducedMotion={!!reduced} />
+            </motion.div>
           </Suspense>
         </SceneBoundary>
       )}
 
-      <div className="max-w-4xl mx-auto text-center relative z-10">
+      <motion.div
+        className="max-w-4xl mx-auto text-center relative z-10"
+        style={{ y: contentY, opacity: contentOpacity }}
+      >
         {/* Available tag */}
         <motion.div
           {...fadeUp(0.1)}
@@ -220,7 +245,7 @@ export default function Hero() {
             </motion.a>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <a
