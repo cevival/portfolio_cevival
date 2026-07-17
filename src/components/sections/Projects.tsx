@@ -3,6 +3,8 @@ import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { GitHubIcon } from "../ui/brand-icons";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import { Reveal } from "../motion/Reveal";
+import { TiltCard } from "../motion/TiltCard";
 
 const THUM = (url: string) =>
   `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1200&h=630`;
@@ -165,7 +167,7 @@ export default function Projects() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-14">
+        <Reveal className="text-center mb-14">
           <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-widest mb-2">
             {t.title[lang]}
           </p>
@@ -187,7 +189,7 @@ export default function Projects() {
               />
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {/* Carousel container */}
         <div
@@ -239,7 +241,8 @@ export default function Projects() {
                   }`}
                 >
                   {/* ─── The div style you specified ─── */}
-                  <div
+                  <TiltCard
+                    intensity={isCenter ? 8 : 5}
                     className={`relative rounded-xl border border-[hsl(var(--border)/0.5)] bg-[hsl(var(--card))] shadow-2xl overflow-hidden h-full flex flex-col
                       transition-all duration-300
                       ${isCenter ? "border-glow glow-primary-lg" : "hover:border-[hsl(var(--border))]"}`}
@@ -352,7 +355,7 @@ export default function Projects() {
 
                     {/* Bottom shimmer */}
                     <div className="h-px w-full bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
-                  </div>
+                  </TiltCard>
                 </div>
               );
             })}

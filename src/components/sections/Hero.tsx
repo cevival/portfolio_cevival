@@ -1,18 +1,69 @@
-import React from "react";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { ArrowDown, Mail, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { animate, stagger } from "animejs";
 import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
+const HeroScene = lazy(() => import("../three/HeroScene"));
+
+/** Splits a word into letter spans so anime.js can animate them one by one. */
+function AnimatedWord({ word, className }: { word: string; className?: string }) {
+  return (
+    <span className={className} aria-label={word}>
+      {word.split("").map((letter, i) => (
+        <span
+          key={`${letter}-${i}`}
+          aria-hidden
+          className="hero-letter inline-block"
+          style={{ opacity: 0 }}
+        >
+          {letter}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function Hero() {
   const { lang } = useLang();
   const t = translations.hero;
+  const reduced = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  // Letter-by-letter apparition of the name (anime.js)
+  useEffect(() => {
+    if (!nameRef.current) return;
+    const letters = nameRef.current.querySelectorAll(".hero-letter");
+    if (reduced) {
+      letters.forEach((el) => ((el as HTMLElement).style.opacity = "1"));
+      return;
+    }
+    animate(letters, {
+      opacity: [0, 1],
+      translateY: [42, 0],
+      rotateX: [-70, 0],
+      duration: 850,
+      delay: stagger(38, { start: 250 }),
+      ease: "outExpo",
+    });
+  }, [reduced]);
+
+  const fadeUp = (delay: number) => ({
+    initial: reduced ? false : { opacity: 0, y: 26 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
+  });
 
   return (
     <section
       id="hero"
-      className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-16"
+      className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-16 overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -24,56 +75,71 @@ export default function Hero() {
           className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#06b6d4]/[0.06] rounded-full blur-3xl animate-float"
           style={{ animationDuration: "9s", animationDelay: "2s" }}
         />
-        <div
-          className="absolute top-3/4 left-1/3 w-[300px] h-[300px] bg-[#8b5cf6]/[0.04] rounded-full blur-3xl animate-float"
-          style={{ animationDuration: "11s", animationDelay: "4s" }}
-        />
         <div className="absolute inset-0 grid-bg opacity-40" />
       </div>
 
+      {/* 3D WebGL scene (client only, skipped for reduced motion) */}
+      {mounted && !reduced && (
+        <Suspense fallback={null}>
+          <HeroScene />
+        </Suspense>
+      )}
+
       <div className="max-w-4xl mx-auto text-center relative z-10">
         {/* Available tag */}
-        <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-8 animate-fade-in-up"
-          style={{ animationDelay: "0.1s", opacity: 0 }}
+        <motion.div
+          {...fadeUp(0.1)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-8"
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
           </span>
           {t.available[lang]}
-        </div>
+        </motion.div>
 
         {/* Greeting */}
-        <p className="text-lg text-[hsl(var(--muted-foreground))] mb-3">
-          {t.greeting[lang]}
-        </p>
-
-        {/* Name */}
-        <h1
-          className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-fade-in-up"
-          style={{ animationDelay: "0.3s", opacity: 0 }}
+        <motion.p
+          {...fadeUp(0.2)}
+          className="text-lg text-[hsl(var(--muted-foreground))] mb-3"
         >
-          <span className="gradient-text text-glow">Guillaume</span>
+          {t.greeting[lang]}
+        </motion.p>
+
+        {/* Name — animated letter by letter */}
+        <h1
+          ref={nameRef}
+          className="text-5xl md:text-7xl font-bold tracking-tight mb-4 [perspective:600px]"
+        >
+          <AnimatedWord word="Guillaume" className="gradient-text text-glow" />
           <br />
-          <span className="text-[hsl(var(--foreground))]">Desplan</span>
+          <AnimatedWord
+            word="Desplan"
+            className="text-[hsl(var(--foreground))]"
+          />
         </h1>
 
         {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-semibold text-[hsl(var(--muted-foreground))] mb-6">
+        <motion.h2
+          {...fadeUp(0.45)}
+          className="text-2xl md:text-3xl font-semibold text-[hsl(var(--muted-foreground))] mb-6"
+        >
           {t.title[lang]}
-        </h2>
+        </motion.h2>
 
         {/* Subtitle */}
-        <p
-          className="text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up"
-          style={{ animationDelay: "0.5s", opacity: 0 }}
+        <motion.p
+          {...fadeUp(0.55)}
+          className="text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           {t.subtitle[lang]}
-        </p>
+        </motion.p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+        <motion.div
+          {...fadeUp(0.7)}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+        >
           <Button
             size="lg"
             onClick={() =>
@@ -97,36 +163,44 @@ export default function Hero() {
           >
             {t.cta_contact[lang]}
           </Button>
-        </div>
+        </motion.div>
 
         {/* Social links */}
-        <div className="flex items-center justify-center gap-4">
-          <a
-            href="https://github.com/cevival"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-            aria-label="GitHub"
-          >
-            <GitHubIcon className="h-5 w-5" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/guillaume-desplan-36008a2a2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-            aria-label="LinkedIn"
-          >
-            <LinkedInIcon className="h-5 w-5" />
-          </a>
-          <a
-            href="mailto:desplan.guillaume33@gmail.com"
-            className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-            aria-label="Email"
-          >
-            <Mail className="h-5 w-5" />
-          </a>
-        </div>
+        <motion.div
+          {...fadeUp(0.85)}
+          className="flex items-center justify-center gap-4"
+        >
+          {[
+            {
+              href: "https://github.com/cevival",
+              label: "GitHub",
+              Icon: GitHubIcon,
+            },
+            {
+              href: "https://www.linkedin.com/in/guillaume-desplan-36008a2a2",
+              label: "LinkedIn",
+              Icon: LinkedInIcon,
+            },
+            {
+              href: "mailto:desplan.guillaume33@gmail.com",
+              label: "Email",
+              Icon: Mail,
+            },
+          ].map(({ href, label, Icon }) => (
+            <motion.a
+              key={label}
+              href={href}
+              target={href.startsWith("mailto") ? undefined : "_blank"}
+              rel="noopener noreferrer"
+              whileHover={reduced ? undefined : { scale: 1.15, y: -2 }}
+              whileTap={reduced ? undefined : { scale: 0.92 }}
+              className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
+              aria-label={label}
+            >
+              <Icon className="h-5 w-5" />
+            </motion.a>
+          ))}
+        </motion.div>
       </div>
 
       {/* Scroll indicator */}

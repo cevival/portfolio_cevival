@@ -1,6 +1,8 @@
 import React from "react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
+import { TiltCard } from "../motion/TiltCard";
 
 const skillGroups = [
   {
@@ -50,27 +52,25 @@ export default function Skills() {
     <section id="skills" className="py-24 px-6 bg-[hsl(var(--muted))]/50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
             {t.subtitle[lang]}
           </h2>
-        </div>
+        </Reveal>
 
         {/* Skills grid */}
-        <div className="grid md:grid-cols-3 gap-8">
+        <Stagger className="grid md:grid-cols-3 gap-8">
           {skillGroups.map(({ key, skills }) => {
             const label = t[key as keyof typeof t] as Record<
               "fr" | "en",
               string
             >;
             return (
-              <div
-                key={key}
-                className="relative p-6 rounded-xl glass border-[hsl(var(--border)/0.5)] shadow-sm overflow-hidden card-hover shimmer-card group"
-              >
+              <StaggerItem key={key}>
+                <TiltCard className="relative h-full rounded-xl p-6 glass border-[hsl(var(--border)/0.5)] shadow-sm overflow-hidden shimmer-card group">
                 {/* Glow on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.5)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -91,10 +91,11 @@ export default function Skills() {
                     </span>
                   ))}
                 </div>
-              </div>
+                </TiltCard>
+              </StaggerItem>
             );
           })}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

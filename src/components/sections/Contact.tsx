@@ -4,6 +4,7 @@ import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
 
 const contactLinks = [
   {
@@ -40,7 +41,7 @@ export default function Contact() {
     <section id="contact" className="py-24 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
@@ -50,12 +51,13 @@ export default function Contact() {
           <p className="text-lg text-[hsl(var(--muted-foreground))] max-w-xl mx-auto">
             {t.description[lang]}
           </p>
-        </div>
+        </Reveal>
 
         {/* Contact cards */}
-        <div className="grid gap-4 max-w-lg mx-auto mb-10">
+        <Stagger className="grid gap-4 max-w-lg mx-auto mb-10">
           {contactLinks.map(
             ({ icon: Icon, label_key, href, display, color, bg }) => (
+              <StaggerItem key={href}>
               <a
                 key={href}
                 href={href}
@@ -76,19 +78,20 @@ export default function Contact() {
                 </div>
                 <ArrowRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))] group-hover:translate-x-1 transition-all" />
               </a>
+              </StaggerItem>
             ),
           )}
-        </div>
+        </Stagger>
 
         {/* CTA */}
-        <div className="text-center">
+        <Reveal className="text-center">
           <Button size="lg" className="gap-2" asChild>
             <a href="mailto:desplan.guillaume33@gmail.com">
               <Mail className="h-4 w-4" />
               {t.email_label[lang]}
             </a>
           </Button>
-        </div>
+        </Reveal>
       </div>
 
       {/* Footer */}

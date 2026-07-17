@@ -1,6 +1,8 @@
 import React from "react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import { Reveal } from "../motion/Reveal";
+import { TiltCard } from "../motion/TiltCard";
 
 const experiences = [
   {
@@ -55,14 +57,14 @@ export default function Experience() {
     <section id="experience" className="py-24 px-6 bg-[hsl(var(--muted))]/50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
             {t.subtitle[lang]}
           </h2>
-        </div>
+        </Reveal>
 
         {/* Timeline */}
         <div className="relative max-w-3xl mx-auto">
@@ -70,13 +72,13 @@ export default function Experience() {
           <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500 via-purple-500 to-transparent" />
 
           <div className="space-y-10">
-            {experiences.map((exp) => (
-              <div key={exp.company} className="relative pl-20">
+            {experiences.map((exp, i) => (
+              <Reveal key={exp.company} delay={i * 0.12} className="relative pl-20">
                 {/* Dot */}
                 <div className="absolute left-6 top-6 w-5 h-5 rounded-full bg-[hsl(var(--primary))] border-4 border-[hsl(var(--background))] shadow-md -translate-x-1/2 shadow-[0_0_8px_2px_hsl(var(--primary)/0.5)]" />
 
                 {/* Card */}
-                <div className="p-6 rounded-xl bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm card-hover">
+                <TiltCard intensity={5} className="relative rounded-xl p-6 bg-[hsl(var(--card))] border border-[hsl(var(--border))] shadow-sm card-hover">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
                     <div>
                       <h3 className="font-bold text-lg text-[hsl(var(--foreground))]">
@@ -117,8 +119,8 @@ export default function Experience() {
                       </a>
                     )}
                   </div>
-                </div>
-              </div>
+                </TiltCard>
+              </Reveal>
             ))}
           </div>
         </div>

@@ -3,6 +3,8 @@ import { MapPin, Briefcase, Languages, GraduationCap } from "lucide-react";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 import moi from "../../assets/moi.jpeg";
+import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
+import { TiltCard } from "../motion/TiltCard";
 
 export default function About() {
   const { lang } = useLang();
@@ -27,19 +29,19 @@ export default function About() {
     <section id="about" className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
             {t.title[lang]}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
             {t.subtitle[lang]}
           </h2>
-        </div>
+        </Reveal>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Avatar placeholder */}
-          <div className="flex justify-center">
-            <div className="relative">
+          <Reveal className="flex justify-center">
+            <TiltCard intensity={7} glare={false} className="relative">
               <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[#06b6d4] flex items-center justify-center text-white text-7xl font-bold shadow-2xl glow-primary-lg animated-border animate-pulse-glow">
                 <img
                   src={moi.src}
@@ -57,22 +59,24 @@ export default function About() {
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
+            </TiltCard>
+          </Reveal>
 
           {/* Content */}
           <div className="space-y-6">
-            <p className="text-[hsl(var(--muted-foreground))] leading-relaxed text-lg">
-              {t.p1[lang]}
-            </p>
-            <p className="text-[hsl(var(--muted-foreground))] leading-relaxed">
-              {t.p2[lang]}
-            </p>
+            <Reveal delay={0.1}>
+              <p className="text-[hsl(var(--muted-foreground))] leading-relaxed text-lg mb-6">
+                {t.p1[lang]}
+              </p>
+              <p className="text-[hsl(var(--muted-foreground))] leading-relaxed">
+                {t.p2[lang]}
+              </p>
+            </Reveal>
 
             {/* Info grid */}
-            <div className="grid grid-cols-1 gap-4 pt-4">
+            <Stagger className="grid grid-cols-1 gap-4 pt-4">
               {info.map(({ icon: Icon, label, value }) => (
-                <div
+                <StaggerItem
                   key={label}
                   className="flex items-center gap-4 p-4 rounded-lg glass border-[hsl(var(--border)/0.5)] shimmer-card card-hover"
                 >
@@ -87,9 +91,9 @@ export default function About() {
                       {value}
                     </p>
                   </div>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
         </div>
       </div>
