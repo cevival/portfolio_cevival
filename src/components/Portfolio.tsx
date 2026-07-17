@@ -4,7 +4,6 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { LangProvider } from "../context/LangContext";
 import Navbar from "./Navbar";
 import { SmoothScroll } from "./motion/SmoothScroll";
-import { Cursor } from "./motion/Cursor";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Skills from "./sections/Skills";
@@ -14,12 +13,13 @@ import Contact from "./sections/Contact";
 
 export default function Portfolio() {
   return (
-    <MotionConfig reducedMotion="user">
+    // reducedMotion="never": animations stay visible even on devices
+    // reporting prefers-reduced-motion
+    <MotionConfig reducedMotion="never">
       <ThemeProvider>
         <LangProvider>
         <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
           <SmoothScroll />
-          <Cursor />
           <Navbar />
           <main>
             <Hero />

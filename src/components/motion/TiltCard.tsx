@@ -5,7 +5,6 @@ import {
   useSpring,
   useTransform,
   useMotionTemplate,
-  useReducedMotion,
 } from "motion/react";
 
 interface TiltCardProps {
@@ -29,7 +28,6 @@ export function TiltCard({
   glare = true,
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
 
   const px = useMotionValue(0.5); // pointer position, 0..1
   const py = useMotionValue(0.5);
@@ -49,7 +47,7 @@ export function TiltCard({
   const glareBg = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, hsl(var(--primary) / 0.14), transparent 55%)`;
 
   const handleMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (reduced || e.pointerType === "touch" || !ref.current) return;
+    if (e.pointerType === "touch" || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     px.set((e.clientX - rect.left) / rect.width);
     py.set((e.clientY - rect.top) / rect.height);

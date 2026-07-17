@@ -3,13 +3,11 @@ import Lenis from "lenis";
 
 /**
  * Inertial smooth scrolling (Lenis, as used by incredibles.dev and most
- * award-winning sites). Renders nothing; disabled for reduced motion.
+ * award-winning sites). Renders nothing.
  * `anchors: true` makes #hash navigation glide instead of jumping.
  */
 export function SmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

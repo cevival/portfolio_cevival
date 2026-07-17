@@ -1,11 +1,6 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { ArrowDown, Mail, Sparkles } from "lucide-react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { animate, stagger } from "animejs";
 import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
 import { Button } from "../ui/button";
@@ -39,15 +34,20 @@ class SceneBoundary extends React.Component<
   }
 }
 
-/** Splits a word into letter spans so anime.js can animate them one by one. */
+/**
+ * Splits a word into letter spans so anime.js can animate them one by one.
+ * `className` is applied to EACH letter (not the wrapper): the animation
+ * leaves a transform on every span, and a transform on a child breaks
+ * background-clip:text gradients declared on the parent.
+ */
 function AnimatedWord({ word, className }: { word: string; className?: string }) {
   return (
-    <span className={className} aria-label={word}>
+    <span aria-label={word}>
       {word.split("").map((letter, i) => (
         <span
           key={`${letter}-${i}`}
           aria-hidden
-          className="hero-letter inline-block"
+          className={`hero-letter inline-block ${className ?? ""}`}
           style={{ opacity: 0 }}
         >
           {letter}
@@ -60,7 +60,6 @@ function AnimatedWord({ word, className }: { word: string; className?: string })
 export default function Hero() {
   const { lang } = useLang();
   const t = translations.hero;
-  const reduced = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -81,10 +80,6 @@ export default function Hero() {
   useEffect(() => {
     if (!nameRef.current) return;
     const letters = nameRef.current.querySelectorAll(".hero-letter");
-    if (reduced) {
-      letters.forEach((el) => ((el as HTMLElement).style.opacity = "1"));
-      return;
-    }
     animate(letters, {
       opacity: [0, 1],
       translateY: [42, 0],
@@ -93,12 +88,12 @@ export default function Hero() {
       delay: stagger(38, { start: 250 }),
       ease: "outExpo",
     });
-  }, [reduced]);
+  }, []);
 
   const fadeUp = (delay: number) => ({
-    initial: { opacity: 0, y: 26 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
+    initial: { opacity: 0, y: 26, filter: "blur(8px)" },
+    animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+    transition: { duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
   });
 
   return (
@@ -128,7 +123,7 @@ export default function Hero() {
               className="absolute inset-0"
               style={{ scale: sceneScale, opacity: sceneOpacity }}
             >
-              <HeroScene reducedMotion={!!reduced} />
+              <HeroScene />
             </motion.div>
           </Suspense>
         </SceneBoundary>
