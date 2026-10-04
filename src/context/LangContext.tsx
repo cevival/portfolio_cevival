@@ -28,6 +28,11 @@ export function LangProvider({
     if (stored === "fr" || stored === "en") setLang(stored);
   }, []);
 
+  // Garde <html lang> aligné sur la langue affichée (lecteurs d'écran, césure)
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   const toggle = useCallback(() => {
     setLang((prev) => {
       const next: Lang = prev === "fr" ? "en" : "fr";
