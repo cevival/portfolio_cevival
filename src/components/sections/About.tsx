@@ -1,100 +1,88 @@
 import React from "react";
-import { MapPin, Briefcase, Languages, GraduationCap } from "lucide-react";
+import { motion } from "motion/react";
+import { EASE, RevealText, VIEWPORT, rise, stagger } from "../motion/Reveal";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
-import moi from "../../assets/moi.jpeg";
-import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
-import { TiltCard } from "../motion/TiltCard";
+import moi from "../../assets/moi.webp";
 
 export default function About() {
   const { lang } = useLang();
   const t = translations.about;
 
-  const info = [
-    { icon: MapPin, label: t.location[lang], value: t.location_val[lang] },
-    { icon: Briefcase, label: t.status[lang], value: t.status_val[lang] },
-    {
-      icon: GraduationCap,
-      label: t.formation[lang],
-      value: t.formation_val[lang],
-    },
-    {
-      icon: Languages,
-      label: t.languages_label[lang],
-      value: t.languages_val[lang],
-    },
+  const facts = [
+    { label: t.location[lang], value: t.location_val[lang] },
+    { label: t.status[lang], value: t.status_val[lang] },
+    { label: t.formation[lang], value: t.formation_val[lang] },
+    { label: t.languages_label[lang], value: t.languages_val[lang] },
   ];
 
   return (
-    <section id="about" className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <Reveal className="text-center mb-16">
-          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
-            {t.title[lang]}
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))]">
-            {t.subtitle[lang]}
+    <section id="about" className="band">
+      <div className="grid items-start gap-x-[clamp(2rem,6vw,5rem)] gap-y-12 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
+        {/* L'aplat jaune apparaît, la photo le recouvre, puis il se décale en ombre */}
+        <motion.div
+          className="portrait-wrap"
+          initial="hidden"
+          whileInView="show"
+          viewport={VIEWPORT}
+        >
+          <motion.span
+            aria-hidden="true"
+            className="portrait-shadow"
+            variants={{
+              hidden: { opacity: 0, x: 0, y: 0 },
+              show: {
+                opacity: 1,
+                x: 10,
+                y: 10,
+                transition: {
+                  opacity: { duration: 0.3 },
+                  default: { delay: 0.95, type: "spring", stiffness: 220, damping: 14 },
+                },
+              },
+            }}
+          />
+          <motion.img
+            src={moi.src}
+            width={moi.width}
+            height={moi.height}
+            alt="Guillaume Desplan"
+            decoding="async"
+            className="portrait"
+            variants={{
+              hidden: { clipPath: "inset(0% 0% 100% 0%)" },
+              show: {
+                clipPath: "inset(0% 0% 0% 0%)",
+                transition: { delay: 0.2, duration: 0.9, ease: EASE },
+              },
+            }}
+          />
+        </motion.div>
+
+        <div>
+          <h2 className="heading">
+            <RevealText text={t.title[lang]} />
           </h2>
-        </Reveal>
+          <motion.div {...stagger(0.1)}>
+            <motion.p
+              variants={rise}
+              className="mt-7 max-w-[38em] text-[1.1875rem] leading-relaxed"
+            >
+              {t.p1[lang]}
+            </motion.p>
+            <motion.p variants={rise} className="mt-4 max-w-[38em] text-muted">
+              {t.p2[lang]}
+            </motion.p>
+          </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Avatar placeholder */}
-          <Reveal className="flex justify-center">
-            <TiltCard intensity={7} glare={false} className="relative">
-              <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[#06b6d4] flex items-center justify-center text-white text-7xl font-bold shadow-2xl glow-primary-lg animated-border animate-pulse-glow">
-                <img
-                  src={moi.src}
-                  alt="Guillaume Desplan"
-                  className="rounded-2xl object-cover w-full h-full"
-                />
-              </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 glass rounded-xl border border-[hsl(var(--primary)/0.4)] shadow-lg glow-primary flex items-center justify-center animate-float">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-[hsl(var(--primary))]">
-                    3+
-                  </p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                    ans exp.
-                  </p>
-                </div>
-              </div>
-            </TiltCard>
-          </Reveal>
-
-          {/* Content */}
-          <div className="space-y-6">
-            <Reveal delay={0.1}>
-              <p className="text-[hsl(var(--muted-foreground))] leading-relaxed text-lg mb-6">
-                {t.p1[lang]}
-              </p>
-              <p className="text-[hsl(var(--muted-foreground))] leading-relaxed">
-                {t.p2[lang]}
-              </p>
-            </Reveal>
-
-            {/* Info grid */}
-            <Stagger className="grid grid-cols-1 gap-4 pt-4">
-              {info.map(({ icon: Icon, label, value }) => (
-                <StaggerItem
-                  key={label}
-                  className="flex items-center gap-4 p-4 rounded-lg glass border-[hsl(var(--border)/0.5)] shimmer-card card-hover"
-                >
-                  <div className="p-2 rounded-md bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                      {label}
-                    </p>
-                    <p className="text-sm font-medium text-[hsl(var(--foreground))]">
-                      {value}
-                    </p>
-                  </div>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
+          <motion.dl className="facts mt-9 max-w-[38em]" {...stagger(0.08)}>
+            {facts.map(({ label, value }) => (
+              <motion.div key={label} variants={rise}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </motion.div>
+            ))}
+          </motion.dl>
         </div>
       </div>
     </section>

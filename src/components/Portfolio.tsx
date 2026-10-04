@@ -1,15 +1,35 @@
 import React from "react";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "../context/ThemeContext";
-import { LangProvider } from "../context/LangContext";
+import { LangProvider, useLang } from "../context/LangContext";
+import { translations } from "../i18n/translations";
+import { site } from "../data/site";
+import { featured, more } from "../data/projects";
 import Navbar from "./Navbar";
 import { SmoothScroll } from "./motion/SmoothScroll";
+import { Ticker } from "./motion/Ticker";
 import Hero from "./sections/Hero";
-import About from "./sections/About";
-import Skills from "./sections/Skills";
 import Projects from "./sections/Projects";
+import Stack from "./sections/Stack";
 import Experience from "./sections/Experience";
+import About from "./sections/About";
 import Contact from "./sections/Contact";
+
+// Domaines des sites en ligne, pour le bandeau défilant sous le hero
+const liveDomains = [...featured, ...more].map((project) => project.domain);
+
+function Footer() {
+  const { lang } = useLang();
+
+  return (
+    <footer className="band meta flex flex-wrap justify-between gap-x-8 gap-y-2 !py-7 text-muted">
+      <p>
+        © {new Date().getFullYear()} {site.name}
+      </p>
+      <p>{translations.footer.built[lang]}</p>
+    </footer>
+  );
+}
 
 export default function Portfolio() {
   return (
@@ -18,18 +38,20 @@ export default function Portfolio() {
     <MotionConfig reducedMotion="never">
       <ThemeProvider>
         <LangProvider>
-        <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
           <SmoothScroll />
           <Navbar />
-          <main>
-            <Hero />
-            <About />
-            <Skills />
-            <Projects />
-            <Experience />
-            <Contact />
-          </main>
-        </div>
+          <div className="shell shell--rails">
+            <main>
+              <Hero />
+              <Ticker items={liveDomains} />
+              <Projects />
+              <Stack />
+              <Experience />
+              <About />
+              <Contact />
+            </main>
+            <Footer />
+          </div>
         </LangProvider>
       </ThemeProvider>
     </MotionConfig>

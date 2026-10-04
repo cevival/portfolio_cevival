@@ -2,30 +2,18 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 
 /**
- * Inertial smooth scrolling (Lenis, as used by incredibles.dev and most
- * award-winning sites). Renders nothing.
- * `anchors: true` makes #hash navigation glide instead of jumping.
+ * Défilement inertiel (Lenis). Ne rend rien.
+ * Les liens d'ancre glissent jusqu'à leur section ; l'arrêt sous l'en-tête
+ * fixe vient du `scroll-padding-top` de global.css, que Lenis respecte.
  */
 export function SmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      autoRaf: true,
+      duration: 1.1,
       anchors: true,
     });
-    // Exposed so buttons can trigger inertial scrolling programmatically
-    (window as unknown as { lenis?: Lenis }).lenis = lenis;
-
-    let raf = requestAnimationFrame(function loop(time) {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
-    });
-
-    return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
-      delete (window as unknown as { lenis?: Lenis }).lenis;
-    };
+    return () => lenis.destroy();
   }, []);
 
   return null;

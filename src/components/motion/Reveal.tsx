@@ -1,89 +1,82 @@
 import React from "react";
 import { motion } from "motion/react";
 
+export const EASE = [0.2, 0.7, 0.2, 1] as const;
+
+// L'animation part quand l'élément a dépassé le bas de la fenêtre de 12 %
+export const VIEWPORT = { once: true, margin: "0px 0px -12% 0px" } as const;
+
+/** Variante d'un enfant : monte en fondu quand son parent passe à « show ». */
+export const rise = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+};
+
+/**
+ * Props à poser sur un conteneur `motion.*` pour que ses enfants porteurs de
+ * la variante `rise` apparaissent l'un après l'autre à l'entrée dans la fenêtre.
+ */
+export const stagger = (gap = 0.07) => ({
+  initial: "hidden",
+  whileInView: "show",
+  viewport: VIEWPORT,
+  transition: { staggerChildren: gap },
+});
+
 interface RevealProps {
   children: React.ReactNode;
-  /** Delay in seconds before the animation starts */
-  delay?: number;
-  /** Vertical offset in px the element travels from */
-  y?: number;
-  /** Animate only the first time the element enters the viewport */
-  once?: boolean;
   className?: string;
+  delay?: number;
+}
+
+/** Fait monter son contenu en fondu à l'entrée dans la fenêtre. */
+export function Reveal({ children, className, delay = 0 }: Readonly<RevealProps>) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 22 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VIEWPORT}
+      transition={{ duration: 0.7, delay, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 /**
- * Fade-up apparition when the element scrolls into view.
- * Reduced-motion handling comes from <MotionConfig reducedMotion="user">
- * at the root: transforms are skipped, opacity still fades (SSR-consistent).
+ * Titre dont chaque mot monte derrière un masque. Le texte complet reste lu
+ * d'un bloc par les lecteurs d'écran.
  */
-export function Reveal({
-  children,
-  delay = 0,
-  y = 32,
-  once = true,
-  className,
-}: RevealProps) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y, scale: 0.94, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-      viewport={{ once, margin: "-60px" }}
-      transition={{ duration: 0.8, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+export function RevealText({ text }: Readonly<{ text: string }>) {
+  const words = text.split(" ");
 
-interface StaggerProps {
-  children: React.ReactNode;
-  /** Seconds between each child apparition */
-  gap?: number;
-  className?: string;
-}
-
-/** Container that reveals its <StaggerItem> children one after the other. */
-export function Stagger({ children, gap = 0.12, className }: StaggerProps) {
   return (
-    <motion.div
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: gap } },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-export function StaggerItem({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <motion.div
-      className={className}
-      variants={{
-        hidden: { opacity: 0, y: 36, scale: 0.94, filter: "blur(8px)" },
-        visible: {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: "blur(0px)",
-          transition: { duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
+    <>
+      <span className="sr-only">{text}</span>
+      <motion.span
+        aria-hidden="true"
+        className="reveal-text"
+        initial="hidden"
+        whileInView="show"
+        viewport={VIEWPORT}
+        transition={{ staggerChildren: 0.08 }}
+      >
+        {words.map((word, i) => (
+          <React.Fragment key={`${word}-${i}`}>
+            <span className="reveal-word">
+              <motion.span
+                variants={{
+                  hidden: { y: "115%" },
+                  show: { y: 0, transition: { duration: 0.85, ease: EASE } },
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>{" "}
+          </React.Fragment>
+        ))}
+      </motion.span>
+    </>
   );
 }

@@ -1,255 +1,300 @@
-import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
-import { ArrowDown, Mail, Sparkles } from "lucide-react";
-import { motion, useScroll, useTransform } from "motion/react";
-import { animate, stagger } from "animejs";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Mail } from "lucide-react";
+import {
+  motion,
+  motionValue,
+  useMotionTemplate,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
-import { Button } from "../ui/button";
+import { BrowserFrame } from "../BrowserFrame";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
+import { featured } from "../../data/projects";
+import { site } from "../../data/site";
 
-const HeroScene = lazy(() => import("../three/HeroScene"));
+const socials = [
+  { href: site.github.url, label: "GitHub", Icon: GitHubIcon },
+  { href: site.linkedin.url, label: "LinkedIn", Icon: LinkedInIcon },
+  { href: `mailto:${site.email}`, label: "E-mail", Icon: Mail },
+];
 
-/** Scrolls to an anchor through Lenis when active (inertial), else natively. */
-function scrollToId(id: string) {
-  const lenis = (window as unknown as { lenis?: { scrollTo: (t: string) => void } })
-    .lenis;
-  if (lenis) lenis.scrollTo(`#${id}`);
-  else document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-}
+// Ombres des trois fenêtres : violet, rouge, jaune
+const tones = ["violet", "rouge", "jaune"] as const;
 
-/**
- * The 3D scene is decorative: if it fails to load (WebGL unavailable, stale
- * dev cache, network error), render nothing instead of crashing the page.
- */
-class SceneBoundary extends React.Component<
-  { children: React.ReactNode },
-  { failed: boolean }
-> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
+// Le rang d'apparition est porté par --i (voir .hero-fade dans global.css)
+const step = (i: number) => ({ "--i": i }) as React.CSSProperties;
+
+const NAME_LINES = ["Guillaume", "Desplan"];
+// Rayon d'influence du curseur sur les lettres, en pixels
+const POINTER_RADIUS = 240;
 
 /**
- * Splits a word into letter spans so anime.js can animate them one by one.
- * `className` is applied to EACH letter (not the wrapper): the animation
- * leaves a transform on every span, and a transform on a child breaks
- * background-clip:text gradients declared on the parent.
+ * Une lettre du nom. `proximity` va de 0 (lettre au repos : grasse et étroite)
+ * à 1 (curseur dessus : fine et large), sur les axes de la police variable.
  */
-function AnimatedWord({ word, className }: { word: string; className?: string }) {
+function Letter({
+  char,
+  proximity,
+  delay,
+  register,
+}: Readonly<{
+  char: string;
+  proximity: MotionValue<number>;
+  delay: number;
+  register: (el: HTMLSpanElement | null) => void;
+}>) {
+  const smooth = useSpring(proximity, { stiffness: 210, damping: 20, mass: 0.6 });
+  const weight = useTransform(smooth, [0, 1], [800, 240]);
+  const width = useTransform(smooth, [0, 1], [75, 100]);
+  const fontVariationSettings = useMotionTemplate`"wght" ${weight}, "wdth" ${width}`;
+
   return (
-    <span aria-label={word}>
-      {word.split("").map((letter, i) => (
-        <span
-          key={`${letter}-${i}`}
-          aria-hidden
-          className={`hero-letter inline-block ${className ?? ""}`}
-          style={{ opacity: 0 }}
-        >
-          {letter}
+    <motion.span
+      ref={register}
+      className="hero-letter"
+      style={{ fontVariationSettings }}
+      initial={{ y: "112%" }}
+      animate={{ y: 0 }}
+      transition={{ delay, duration: 0.95, ease: [0.2, 0.7, 0.2, 1] }}
+    >
+      {char}
+    </motion.span>
+  );
+}
+
+function HeroName() {
+  const letterCount = NAME_LINES.join("").length;
+  // Les lettres arrivent fines (1), puis s'épaississent une à une (0)
+  const proximities = useMemo(
+    () => Array.from({ length: letterCount }, () => motionValue(1)),
+    [letterCount],
+  );
+  const letters = useRef<(HTMLSpanElement | null)[]>([]);
+
+  useEffect(() => {
+    const timers = proximities.map((value, i) =>
+      setTimeout(() => value.set(0), 320 + i * 55),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [proximities]);
+
+  // Les lettres proches du curseur s'affinent et s'élargissent
+  useEffect(() => {
+    let frame = 0;
+    let pointer: { x: number; y: number } | null = null;
+
+    const update = () => {
+      frame = 0;
+      letters.current.forEach((el, i) => {
+        if (!el) return;
+        if (!pointer) {
+          proximities[i].set(0);
+          return;
+        }
+        const rect = el.getBoundingClientRect();
+        const distance = Math.hypot(
+          pointer.x - (rect.left + rect.width / 2),
+          pointer.y - (rect.top + rect.height / 2),
+        );
+        const near = Math.max(0, 1 - distance / POINTER_RADIUS);
+        proximities[i].set(near * near);
+      });
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      pointer = { x: e.clientX, y: e.clientY };
+      schedule();
+    };
+    const onLeave = () => {
+      pointer = null;
+      schedule();
+    };
+
+    globalThis.addEventListener("pointermove", onMove);
+    document.documentElement.addEventListener("pointerleave", onLeave);
+    return () => {
+      cancelAnimationFrame(frame);
+      globalThis.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+    };
+  }, [proximities]);
+
+  let index = 0;
+  return (
+    <h1 className="display hero-name">
+      <span className="sr-only">{site.name}</span>
+      {NAME_LINES.map((line) => (
+        <span key={line} className="hero-line" aria-hidden="true">
+          {line.split("").map((char) => {
+            const i = index++;
+            return (
+              <Letter
+                key={i}
+                char={char}
+                proximity={proximities[i]}
+                delay={0.05 + i * 0.035}
+                register={(el) => {
+                  letters.current[i] = el;
+                }}
+              />
+            );
+          })}
         </span>
       ))}
-    </span>
+    </h1>
+  );
+}
+
+/** Les trois fenêtres empilées, déplaçables à la souris comme sur un bureau. */
+function HeroWindows() {
+  const { lang } = useLang();
+  const t = translations.hero;
+  const stackRef = useRef<HTMLDivElement>(null);
+  // Ordre d'empilement : le dernier indice est au-dessus
+  const [order, setOrder] = useState([0, 1, 2]);
+  const [dragging, setDragging] = useState<number | null>(null);
+  // Au doigt, glisser sur une fenêtre doit faire défiler la page
+  const [canDrag, setCanDrag] = useState(false);
+  const justDragged = useRef(false);
+
+  useEffect(() => {
+    setCanDrag(globalThis.matchMedia("(pointer: fine)").matches);
+  }, []);
+
+  const bringToFront = (i: number) =>
+    setOrder((prev) => [...prev.filter((n) => n !== i), i]);
+
+  return (
+    <div>
+      <div
+        ref={stackRef}
+        className="hero-stack"
+        role="group"
+        aria-label={t.stack_label[lang]}
+      >
+        {featured.map((project, i) => (
+          <motion.div
+            key={project.slug}
+            className="hero-win"
+            data-draggable={canDrag}
+            data-dragging={dragging === i}
+            style={{ zIndex: order.indexOf(i) + 1 }}
+            initial={{ opacity: 0, x: 22, y: 34, rotate: 2.5 }}
+            animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
+            transition={{
+              delay: 0.5 + i * 0.16,
+              type: "spring",
+              stiffness: 110,
+              damping: 16,
+            }}
+            drag={canDrag}
+            dragConstraints={stackRef}
+            dragElastic={0.2}
+            dragTransition={{ power: 0.2, bounceStiffness: 320, bounceDamping: 24 }}
+            whileDrag={{ scale: 1.03, rotate: -1.2 }}
+            onPointerDown={() => bringToFront(i)}
+            onDragStart={() => {
+              justDragged.current = true;
+              setDragging(i);
+            }}
+            onDragEnd={() => {
+              setDragging(null);
+              // Le clic qui suit le relâchement ne doit pas ouvrir le site
+              setTimeout(() => {
+                justDragged.current = false;
+              }, 50);
+            }}
+            onClickCapture={(e) => {
+              if (!justDragged.current) return;
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <BrowserFrame
+              url={project.url}
+              domain={project.domain}
+              shot={project.shot}
+              tone={tones[i % tones.length]}
+              label={`${t.open_site[lang]} ${project.domain}`}
+              liveLabel={t.live[lang]}
+              sizes="(min-width: 64rem) 26rem, 78vw"
+              eager
+            />
+          </motion.div>
+        ))}
+      </div>
+
+      {canDrag && (
+        <p className="hero-fade meta mt-5 text-center text-muted" style={step(9)}>
+          {t.drag_hint[lang]}
+        </p>
+      )}
+    </div>
   );
 }
 
 export default function Hero() {
   const { lang } = useLang();
   const t = translations.hero;
-  const [mounted, setMounted] = useState(false);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Scroll parallax: content drifts up and fades, scene zooms out slightly
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
-  const sceneOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0]);
-
-  useEffect(() => setMounted(true), []);
-
-  // Letter-by-letter apparition of the name (anime.js)
-  useEffect(() => {
-    if (!nameRef.current) return;
-    const letters = nameRef.current.querySelectorAll(".hero-letter");
-    animate(letters, {
-      opacity: [0, 1],
-      translateY: [42, 0],
-      rotateX: [-70, 0],
-      duration: 850,
-      delay: stagger(38, { start: 250 }),
-      ease: "outExpo",
-    });
-  }, []);
-
-  const fadeUp = (delay: number) => ({
-    initial: { opacity: 0, y: 26, filter: "blur(8px)" },
-    animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-    transition: { duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] as const },
-  });
 
   return (
-    <section
-      id="hero"
-      ref={sectionRef}
-      className="min-h-screen flex flex-col items-center justify-center relative px-6 pt-16 overflow-hidden"
-    >
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[hsl(var(--primary)/0.08)] rounded-full blur-3xl animate-float"
-          style={{ animationDuration: "7s" }}
-        />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#06b6d4]/[0.06] rounded-full blur-3xl animate-float"
-          style={{ animationDuration: "9s", animationDelay: "2s" }}
-        />
-        <div className="absolute inset-0 grid-bg opacity-40" />
-      </div>
-
-      {/* 3D WebGL scene (client only; static single frame for reduced motion) */}
-      {mounted && (
-        <SceneBoundary>
-          <Suspense fallback={null}>
-            <motion.div
-              className="absolute inset-0"
-              style={{ scale: sceneScale, opacity: sceneOpacity }}
-            >
-              <HeroScene />
-            </motion.div>
-          </Suspense>
-        </SceneBoundary>
-      )}
-
-      <motion.div
-        className="max-w-4xl mx-auto text-center relative z-10"
-        style={{ y: contentY, opacity: contentOpacity }}
-      >
-        {/* Available tag */}
-        <motion.div
-          {...fadeUp(0.1)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-8"
+    <section id="top" className="hero">
+      <div className="hero-copy">
+        <p
+          className="hero-fade meta flex items-center gap-2.5 text-muted"
+          style={step(0)}
         >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-          </span>
+          <span className="live-dot live-dot--pulse" aria-hidden="true" />
           {t.available[lang]}
-        </motion.div>
+        </p>
 
-        {/* Greeting */}
-        <motion.p
-          {...fadeUp(0.2)}
-          className="text-lg text-[hsl(var(--muted-foreground))] mb-3"
-        >
-          {t.greeting[lang]}
-        </motion.p>
+        <HeroName />
 
-        {/* Name — animated letter by letter */}
-        <h1
-          ref={nameRef}
-          className="text-5xl md:text-7xl font-bold tracking-tight mb-4 [perspective:600px]"
-        >
-          <AnimatedWord word="Guillaume" className="gradient-text text-glow" />
-          <br />
-          <AnimatedWord
-            word="Desplan"
-            className="text-[hsl(var(--foreground))]"
-          />
-        </h1>
-
-        {/* Title */}
-        <motion.h2
-          {...fadeUp(0.45)}
-          className="text-2xl md:text-3xl font-semibold text-[hsl(var(--muted-foreground))] mb-6"
+        <p
+          className="hero-fade text-2xl font-semibold [font-stretch:88%] sm:text-3xl"
+          style={step(4)}
         >
           {t.title[lang]}
-        </motion.h2>
-
-        {/* Subtitle */}
-        <motion.p
-          {...fadeUp(0.55)}
-          className="text-lg text-[hsl(var(--muted-foreground))] max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
+        </p>
+        <p className="hero-fade lede mt-3" style={step(5)}>
           {t.subtitle[lang]}
-        </motion.p>
+        </p>
 
-        {/* CTA Buttons */}
-        <motion.div
-          {...fadeUp(0.7)}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+        <div
+          className="hero-fade mt-8 flex flex-wrap items-center gap-3"
+          style={step(6)}
         >
-          <Button
-            size="lg"
-            onClick={() => scrollToId("projects")}
-            className="gap-2"
-          >
-            <Sparkles className="h-4 w-4" />
+          <a href="#projects" className="btn btn--solid">
             {t.cta_projects[lang]}
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => scrollToId("contact")}
-          >
+          </a>
+          <a href="#contact" className="btn">
             {t.cta_contact[lang]}
-          </Button>
-        </motion.div>
+          </a>
+          <ul className="flex items-center gap-2 sm:ml-2">
+            {socials.map(({ href, label, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target={href.startsWith("mailto") ? undefined : "_blank"}
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="icon-btn h-[2.875rem] w-[2.875rem]"
+                >
+                  <Icon className="h-[1.125rem] w-[1.125rem]" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-        {/* Social links */}
-        <motion.div
-          {...fadeUp(0.85)}
-          className="flex items-center justify-center gap-4"
-        >
-          {[
-            {
-              href: "https://github.com/cevival",
-              label: "GitHub",
-              Icon: GitHubIcon,
-            },
-            {
-              href: "https://www.linkedin.com/in/guillaume-desplan-36008a2a2",
-              label: "LinkedIn",
-              Icon: LinkedInIcon,
-            },
-            {
-              href: "mailto:desplan.guillaume33@gmail.com",
-              label: "Email",
-              Icon: Mail,
-            },
-          ].map(({ href, label, Icon }) => (
-            <motion.a
-              key={label}
-              href={href}
-              target={href.startsWith("mailto") ? undefined : "_blank"}
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.15, y: -2 }}
-              whileTap={{ scale: 0.92 }}
-              className="p-2 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-              aria-label={label}
-            >
-              <Icon className="h-5 w-5" />
-            </motion.a>
-          ))}
-        </motion.div>
-      </motion.div>
-
-      {/* Scroll indicator */}
-      <a
-        href="#about"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors animate-bounce"
-        aria-label="Scroll down"
-      >
-        <ArrowDown className="h-5 w-5" />
-      </a>
+      <HeroWindows />
     </section>
   );
 }

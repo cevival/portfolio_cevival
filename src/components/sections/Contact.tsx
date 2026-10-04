@@ -1,111 +1,131 @@
-import React from "react";
-import { Mail, ArrowRight } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
+import { RevealText, rise, stagger } from "../motion/Reveal";
+import { ArrowUpRight, Check, Copy, Mail } from "lucide-react";
 import { GitHubIcon, LinkedInIcon } from "../ui/brand-icons";
-import { Button } from "../ui/button";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
-import { Reveal, Stagger, StaggerItem } from "../motion/Reveal";
+import { site } from "../../data/site";
 
-const contactLinks = [
-  {
-    icon: Mail,
-    label_key: "email_label",
-    href: "mailto:desplan.guillaume33@gmail.com",
-    display: "desplan.guillaume33@gmail.com",
-    color: "text-red-500 dark:text-red-400",
-    bg: "bg-red-500/10",
-  },
-  {
-    icon: GitHubIcon,
-    label_key: "github_label",
-    href: "https://github.com/cevival",
-    display: "github.com/cevival",
-    color: "text-[hsl(var(--foreground))]",
-    bg: "bg-[hsl(var(--muted))]",
-  },
-  {
-    icon: LinkedInIcon,
-    label_key: "linkedin_label",
-    href: "https://www.linkedin.com/in/guillaume-desplan",
-    display: "linkedin.com/in/guillaume-desplan",
-    color: "text-blue-600 dark:text-blue-400",
-    bg: "bg-blue-500/10",
-  },
+const profiles = [
+  { ...site.github, name: "GitHub", Icon: GitHubIcon },
+  { ...site.linkedin, name: "LinkedIn", Icon: LinkedInIcon },
 ];
 
 export default function Contact() {
   const { lang } = useLang();
   const t = translations.contact;
+  const [copied, setCopied] = useState(false);
+
+  // Les formes du bloc glissent et tournent au rythme du défilement
+  const blockRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: blockRef,
+    offset: ["start end", "end start"],
+  });
+  const circleY = useTransform(scrollYProgress, [0, 1], [70, -50]);
+  const squareRotate = useTransform(scrollYProgress, [0, 1], [-35, 145]);
+  const quarterRotate = useTransform(scrollYProgress, [0, 1], [50, -20]);
+
+  // Le bouton revient à « Copier l'adresse » après deux secondes
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(site.email);
+      setCopied(true);
+    } catch {
+      // Presse-papiers indisponible (contexte non sécurisé) : on ouvre le client mail
+      globalThis.location.href = `mailto:${site.email}`;
+    }
+  };
 
   return (
-    <section id="contact" className="py-24 px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <Reveal className="text-center mb-16">
-          <p className="text-sm font-semibold text-[hsl(var(--primary))] uppercase tracking-wider mb-2">
-            {t.title[lang]}
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-            {t.subtitle[lang]}
-          </h2>
-          <p className="text-lg text-[hsl(var(--muted-foreground))] max-w-xl mx-auto">
+    <section id="contact" className="band">
+      <div ref={blockRef} className="contact">
+        <div className="contact-shapes" aria-hidden="true">
+          <motion.span className="shape shape--circle" style={{ y: circleY }} />
+          <motion.span
+            className="shape shape--square"
+            style={{ rotate: squareRotate }}
+          />
+          <motion.span
+            className="shape shape--quarter"
+            style={{ rotate: quarterRotate }}
+          />
+        </div>
+
+        <h2 className="heading">
+          <RevealText text={t.title[lang]} />
+        </h2>
+        <motion.div {...stagger(0.1)}>
+          <motion.p
+            variants={rise}
+            className="mt-5 max-w-[34em] text-lg text-white/85"
+          >
             {t.description[lang]}
-          </p>
-        </Reveal>
+          </motion.p>
+          <motion.a
+            variants={rise}
+            href={`mailto:${site.email}`}
+            className="contact-mail mt-10"
+          >
+            {site.email}
+          </motion.a>
+        </motion.div>
 
-        {/* Contact cards */}
-        <Stagger className="grid gap-4 max-w-lg mx-auto mb-10">
-          {contactLinks.map(
-            ({ icon: Icon, label_key, href, display, color, bg }) => (
-              <StaggerItem key={href}>
-              <a
-                key={href}
-                href={href}
-                target={href.startsWith("mailto") ? undefined : "_blank"}
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-5 rounded-xl glass border-[hsl(var(--border)/0.5)] hover:border-[hsl(var(--primary)/0.5)] hover:shadow-[0_0_16px_-4px_hsl(var(--primary)/0.3)] transition-all group card-hover shimmer-card"
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href={`mailto:${site.email}`} className="btn">
+            <Mail className="h-4 w-4" aria-hidden="true" />
+            {t.write[lang]}
+          </a>
+          <button type="button" onClick={copyEmail} className="btn">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={copied ? "done" : "idle"}
+                className="flex"
+                initial={{ scale: 0, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 24 }}
               >
-                <div className={`p-3 rounded-xl ${bg}`}>
-                  <Icon className={`h-5 w-5 ${color}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))] mb-0.5">
-                    {(t as any)[label_key][lang]}
-                  </p>
-                  <p className="text-sm font-medium text-[hsl(var(--foreground))] truncate">
-                    {display}
-                  </p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))] group-hover:translate-x-1 transition-all" />
-              </a>
-              </StaggerItem>
-            ),
-          )}
-        </Stagger>
-
-        {/* CTA */}
-        <Reveal className="text-center">
-          <Button size="lg" className="gap-2" asChild>
-            <a href="mailto:desplan.guillaume33@gmail.com">
-              <Mail className="h-4 w-4" />
-              {t.email_label[lang]}
-            </a>
-          </Button>
-        </Reveal>
+                {copied ? (
+                  <Check className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Copy className="h-4 w-4" aria-hidden="true" />
+                )}
+              </motion.span>
+            </AnimatePresence>
+            <span aria-live="polite">
+              {copied ? t.copied[lang] : t.copy[lang]}
+            </span>
+          </button>
+        </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-24 pt-8 border-t border-[hsl(var(--border))] text-center">
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          {translations.footer.made_with[lang]}{" "}
-          <span className="text-red-500">♥</span> {translations.footer.by[lang]}{" "}
-          <span className="font-semibold text-[hsl(var(--foreground))]">
-            Guillaume Desplan
-          </span>
-          {" · "}
-          <span>Astro + React + Tailwind + shadcn/ui</span>
-        </p>
-      </footer>
+      <ul className="cells m-0 mt-8 list-none grid-cols-1 p-0 sm:grid-cols-2">
+        {profiles.map(({ name, url, label, Icon }) => (
+          <li key={name}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 p-5 transition-colors hover:bg-surface"
+            >
+              <Icon className="h-5 w-5 flex-none" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{name}</span>
+                <span className="meta block truncate text-muted">{label}</span>
+              </span>
+              <ArrowUpRight className="h-4 w-4 flex-none text-muted" aria-hidden="true" />
+            </a>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

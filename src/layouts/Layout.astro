@@ -1,4 +1,6 @@
 ---
+import '@fontsource-variable/bricolage-grotesque/standard.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
 
 interface Props {
@@ -22,29 +24,26 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Guillaume Desplan" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f0d1a" media="(prefers-color-scheme: dark)" />
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <!-- Preconnect for fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Theme init script (prevents flash) -->
+    <!-- Theme init script (prevents flash) + .js flag for scroll reveals -->
     <script is:inline>
       (function () {
+        const root = document.documentElement;
+        root.classList.add('js');
         const stored = localStorage.getItem('portfolio-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
+          root.classList.add('dark');
         }
       })();
     </script>
   </head>
-  <body style="font-family: 'Inter', system-ui, sans-serif; margin: 0;">
+  <body>
     <slot />
   </body>
 </html>
