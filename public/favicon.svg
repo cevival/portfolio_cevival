@@ -1,14 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8b5cf6"/>
-      <stop offset="1" stop-color="#06b6d4"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="28" fill="#0d0b14"/>
-  <rect x="4" y="4" width="120" height="120" rx="24" fill="none" stroke="url(#g)" stroke-width="4"/>
-  <text x="64" y="66" text-anchor="middle" dominant-baseline="central"
-    font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-size="58"
-    font-weight="800" letter-spacing="-3" fill="url(#g)">GD</text>
-  <circle cx="100" cy="100" r="6" fill="#06b6d4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#16132a"/>
+  <path d="M41.64 20.51A15 15 0 1 0 47 32" fill="none" stroke="#fff" stroke-width="10"/>
+  <rect x="32" y="27" width="20" height="10" fill="#7a62ff"/>
 </svg>
