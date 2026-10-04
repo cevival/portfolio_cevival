@@ -1,6 +1,6 @@
 # Guillaume Desplan — Portfolio
 
-Portfolio personnel one-page construit avec **Astro**, **React**, **Tailwind CSS** et **shadcn/ui**.
+Portfolio personnel one-page construit avec **Astro**, **React** et **Tailwind CSS**.
 
 > 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
