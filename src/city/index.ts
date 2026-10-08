@@ -268,7 +268,7 @@ export function createCity(options: CityOptions): CityHandle {
     });
     windows.setActive(glow);
     signs.setActive(glow);
-    screens.setActive(glow);
+    screens.setActive(glow, active);
     windows.tick(now / 1000);
 
     // La balise flotte au-dessus de l'écran de l'arrêt actif

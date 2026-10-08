@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isNearStop,
   mixPose,
   placeOf,
   progressOf,
@@ -193,6 +194,17 @@ describe("stopProgress", () => {
   it("borne l'indice", () => {
     expect(stopProgress(-2, cfg)).toBe(stopProgress(0, cfg));
     expect(stopProgress(99, cfg)).toBe(stopProgress(3, cfg));
+  });
+});
+
+describe("isNearStop", () => {
+  it("retient l'arrêt visité et ses deux voisins", () => {
+    expect([3, 4, 5, 6, 7].map((index) => isNearStop(index, 5))).toEqual([false, true, true, true, false]);
+  });
+
+  it("ne retient aucun arrêt hors de la visite", () => {
+    // Vue d'ensemble et final : toute la ville est à l'écran, donc en petit
+    expect([0, 1, 5, 11].some((index) => isNearStop(index, -1))).toBe(false);
   });
 });
 

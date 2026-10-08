@@ -85,6 +85,14 @@ export function stopProgress(index: number, cfg: TourConfig) {
 }
 
 /**
+ * Vrai pour l'arrêt visité (`visiting`, -1 hors de la visite) et ses deux
+ * voisins : les seuls dont la caméra s'approche assez pour en lire l'écran.
+ */
+export function isNearStop(index: number, visiting: number) {
+  return visiting >= 0 && Math.abs(index - visiting) <= 1;
+}
+
+/**
  * Ce que le lecteur a sous les yeux : le hero, un arrêt de la visite, ou la
  * suite de la page, `past` pixels après la fin de la section (négatif tant que
  * la barre de navigation la recouvre encore).

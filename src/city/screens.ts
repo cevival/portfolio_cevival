@@ -14,6 +14,7 @@ import {
 import type { Kit } from "./kit";
 import type { Palette, Tone } from "./palette";
 import { browserBar, type Signs } from "./signs";
+import { isNearStop } from "./tour";
 
 export interface ScreenPlace {
   x: number;
@@ -34,7 +35,8 @@ export interface Screens {
   /** Haut de l'écran en coordonnées monde, pour y accrocher une étiquette HTML */
   anchor(lotIndex: number): Vector3 | null;
   setPalette(from: Palette, to: Palette, mix: number): void;
-  setActive(amounts: readonly number[]): void;
+  /** `amounts` : éclairage de chaque parcelle ; `visiting` : arrêt visité, -1 hors de la visite */
+  setActive(amounts: readonly number[], visiting: number): void;
   dispose(): void;
 }
 
@@ -48,14 +50,16 @@ interface Entry {
   top: number;
   urls: { small: string; large: string } | null;
   texture: Texture | null;
+  /** Netteté de la capture affichée : 0 aucune, SMALL ou LARGE */
+  rank: number;
   sharp: boolean;
 }
 
 const TILT = 0.13;
 const BAR = 0.46;
 const RIM = 0.2;
-// En dessous de cette valeur d'activité, la petite capture suffit
-const SHARP_FROM = 0.2;
+const SMALL = 1;
+const LARGE = 2;
 // Activité à partir de laquelle l'écran est entièrement déployé. En vue
 // d'ensemble tous le sont ; pendant la visite, les écrans des parcelles
 // voisines se replient pour ne pas masquer le bâtiment visé.
@@ -70,9 +74,17 @@ export function createScreens(kit: Kit, signs: Signs, palette: Palette, maxAniso
   const geometries: PlaneGeometry[] = [];
   let idle = palette.screenIdle;
   let active: readonly number[] = [];
+  let visiting = -1;
+  let gone = false;
 
-  function show(entry: Entry, url: string) {
+  function show(entry: Entry, url: string, rank: number) {
     loader.load(url, (texture) => {
+      // Arrivée après une capture plus nette, ou après la fermeture de la scène
+      if (gone || rank < entry.rank) {
+        texture.dispose();
+        return;
+      }
+      entry.rank = rank;
       texture.colorSpace = SRGBColorSpace;
       texture.anisotropy = maxAnisotropy;
       entry.texture?.dispose();
@@ -92,9 +104,11 @@ export function createScreens(kit: Kit, signs: Signs, palette: Palette, maxAniso
     const open = Math.min(1, amount / OPEN_AT);
     entry.holder.visible = open > 0.02;
     entry.holder.scale.setScalar(Math.max(0.001, overshoot(open)));
-    if (!entry.sharp && entry.urls && amount > SHARP_FROM) {
+    // La grande capture ne sert qu'aux écrans dont la caméra s'approche : en vue
+    // d'ensemble et au final ils sont tous à l'écran, mais en tout petit
+    if (!entry.sharp && entry.urls && isNearStop(entry.lot, visiting)) {
       entry.sharp = true;
-      show(entry, entry.urls.large);
+      show(entry, entry.urls.large, LARGE);
     }
   }
 
@@ -134,6 +148,7 @@ export function createScreens(kit: Kit, signs: Signs, palette: Palette, maxAniso
         top: legs + RIM * 2 + h + BAR,
         urls: null,
         texture: null,
+        rank: 0,
         sharp: false,
       });
     },
@@ -154,7 +169,7 @@ export function createScreens(kit: Kit, signs: Signs, palette: Palette, maxAniso
           tone: entry.tone,
         }).mesh;
       }
-      show(entry, urls.small);
+      show(entry, urls.small, SMALL);
     },
 
     anchor(lotIndex) {
@@ -169,12 +184,14 @@ export function createScreens(kit: Kit, signs: Signs, palette: Palette, maxAniso
       for (const entry of entries.values()) refresh(entry);
     },
 
-    setActive(amounts) {
+    setActive(amounts, at) {
       active = amounts;
+      visiting = at;
       for (const entry of entries.values()) refresh(entry);
     },
 
     dispose() {
+      gone = true;
       for (const entry of entries.values()) {
         entry.texture?.dispose();
         entry.image.dispose();
