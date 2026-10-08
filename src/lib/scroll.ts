@@ -8,10 +8,11 @@ export function setLenis(instance: Lenis | null) {
 }
 
 /**
- * Fait défiler la page jusqu'à `y`. Passe par Lenis quand il tourne : un
- * défilement natif lancé à côté de lui serait aussitôt contredit.
+ * Fait défiler la page jusqu'à `y`, en glissant ou d'un coup (`immediate`).
+ * Passe par Lenis quand il tourne : un défilement natif lancé à côté de lui
+ * serait aussitôt contredit.
  */
-export function scrollToY(y: number) {
-  if (lenis) lenis.scrollTo(y);
-  else window.scrollTo({ top: y, behavior: "smooth" });
+export function scrollToY(y: number, immediate = false) {
+  if (lenis) lenis.scrollTo(y, { immediate });
+  else window.scrollTo({ top: y, behavior: immediate ? "instant" : "smooth" });
 }

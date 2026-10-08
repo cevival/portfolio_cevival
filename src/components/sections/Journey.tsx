@@ -1,5 +1,5 @@
-import React from "react";
-import { ArrowUpRight, Mail } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Mail } from "lucide-react";
 import { tourConfig } from "../../city/layout";
 import { tourLength } from "../../city/tour";
 import { useLang } from "../../context/LangContext";
@@ -55,7 +55,7 @@ function Hero({ hidden }: Readonly<{ hidden: boolean }>) {
           <a href="#contact" className="btn">
             {t.cta_contact[lang]}
           </a>
-          <ul className="flex items-center gap-2 sm:ml-2">
+          <ul className="hero-socials">
             {socials.map(({ href, label, Icon }) => (
               <li key={label}>
                 <a
@@ -77,8 +77,14 @@ function Hero({ hidden }: Readonly<{ hidden: boolean }>) {
   );
 }
 
-function StopCard({ stop, index, active }: Readonly<{ stop: TourStop; index: number; active: boolean }>) {
+function StopCard({
+  stop,
+  index,
+  active,
+  hidden,
+}: Readonly<{ stop: TourStop; index: number; active: boolean; hidden: boolean }>) {
   const { lang } = useLang();
+  const { goToStop } = useCity();
   const t = translations.tour;
   const { project } = stop;
   const titleId = `stop-${stop.id}`;
@@ -87,16 +93,52 @@ function StopCard({ stop, index, active }: Readonly<{ stop: TourStop; index: num
     <article
       className="stop-card bloc"
       data-active={active}
-      inert={!active}
+      inert={hidden}
       aria-labelledby={titleId}
       style={{ "--tone": `var(--${stop.tone})` } as React.CSSProperties}
     >
-      <p className="stop-count meta">
-        <span>
+      {/* Capture du site : affichée seulement quand la scène 3D ne tourne pas */}
+      {project && (
+        <img
+          className="stop-shot"
+          src={project.shot.src}
+          srcSet={project.shot.srcSet}
+          sizes="(min-width: 48rem) 24rem, 92vw"
+          width={project.shot.width}
+          height={project.shot.height}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+
+      <div className="stop-count meta">
+        <span className="flex items-center gap-2">
+          <span className="stop-tone" aria-hidden="true" />
           {two(index + 1)} / {tourStops.length}
         </span>
-        <span className="stop-tone" aria-hidden="true" />
-      </p>
+        {/* Sur petit écran, le rail n'affiche que des points : ces boutons le relaient */}
+        <span className="stop-steps">
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={t.previous[lang]}
+            disabled={index === 0}
+            onClick={() => goToStop(index - 1)}
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={t.next[lang]}
+            disabled={index === tourStops.length - 1}
+            onClick={() => goToStop(index + 1)}
+          >
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </span>
+      </div>
 
       {project ? (
         <>
@@ -156,9 +198,14 @@ function StopCard({ stop, index, active }: Readonly<{ stop: TourStop; index: num
  */
 export default function Journey() {
   const { lang } = useLang();
-  const { active, goToStop } = useCity();
+  const { active, status, goToStop } = useCity();
   const t = translations.tour;
   const touring = active >= 0;
+  // Sans scène 3D, hero et projets s'affichent à la suite : rien n'est masqué.
+  // Idem avant l'hydratation, pour que la page servie reste utilisable sans JavaScript.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const staged = mounted && status !== "off";
 
   return (
     <section
@@ -174,12 +221,12 @@ export default function Journey() {
       />
 
       <div id="journey-pin" className="journey-pin" data-phase={touring ? "tour" : "hero"}>
-        <Hero hidden={touring} />
+        <Hero hidden={staged && touring} />
 
-        <div className="tour" inert={!touring}>
+        <div className="tour" inert={staged && !touring}>
           <div className="tour-inner">
+            <h2 className="tour-title">{translations.projects.title[lang]}</h2>
             <nav aria-label={t.stops[lang]}>
-              <h2 className="sr-only">{translations.projects.title[lang]}</h2>
               <ol
                 className="rail"
                 style={{ "--stops": tourStops.length, "--stop": Math.max(0, active) } as React.CSSProperties}
@@ -206,7 +253,13 @@ export default function Journey() {
 
             <div className="stop-cards">
               {tourStops.map((stop, i) => (
-                <StopCard key={stop.id} stop={stop} index={i} active={i === active} />
+                <StopCard
+                  key={stop.id}
+                  stop={stop}
+                  index={i}
+                  active={i === active}
+                  hidden={staged && i !== active}
+                />
               ))}
             </div>
           </div>

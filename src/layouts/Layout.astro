@@ -43,6 +43,17 @@ const {
         }
       })();
     </script>
+    <!-- Sans JavaScript, rien ne lance les apparitions au défilement : le contenu reste visible -->
+    <noscript>
+      <style is:inline>
+        .curtain [style],
+        .finale [style] {
+          opacity: 1 !important;
+          transform: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <slot />
