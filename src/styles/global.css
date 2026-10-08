@@ -97,11 +97,18 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
+    /* Hauteur gardée libre sous la barre de navigation quand un lien mène à une section */
+    --nav-clearance: 5.5rem;
+    scroll-padding-top: var(--nav-clearance);
     scrollbar-width: thin;
     scrollbar-color: var(--rule) transparent;
     -webkit-text-size-adjust: 100%;
+  }
+  /* Sans JavaScript, les liens d'ancre glissent grâce au navigateur. Avec, Lenis
+     s'en charge — et une arrivée par lien profond se place d'un coup, au lieu de
+     faire défiler toute la visite sous les yeux du lecteur. */
+  html:not(.js) {
+    scroll-behavior: smooth;
   }
 
   /* Lenis (défilement inertiel) remplace le scroll-behavior natif quand il tourne */
@@ -393,7 +400,9 @@
   }
   .journey-anchor {
     position: absolute;
-    top: calc(var(--at) * 100svh);
+    /* Le bloc épinglé remplit la fenêtre : l'ancre descend d'autant que la page se
+       retient sous la barre, sinon un lien s'arrête un peu avant l'arrêt visé */
+    top: calc(var(--at) * 100svh + var(--nav-clearance));
     left: 0;
     width: 1px;
     height: 1px;
@@ -873,6 +882,10 @@
   }
   :is(html:not(.js), html[data-city="off"]) .journey {
     height: auto;
+  }
+  /* Plus rien n'est épinglé : la liste des projets s'arrête sous la barre, comme une section */
+  :is(html:not(.js), html[data-city="off"]) .journey-anchor {
+    top: calc(var(--at) * 100svh);
   }
   :is(html:not(.js), html[data-city="off"]) .journey-pin {
     --hero: 1;
