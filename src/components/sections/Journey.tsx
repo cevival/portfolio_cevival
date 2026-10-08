@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, Mail } from "lucide-react";
 import { tourConfig } from "../../city/layout";
 import { tourLength } from "../../city/tour";
@@ -82,9 +82,16 @@ function StopCard({
   index,
   active,
   hidden,
-}: Readonly<{ stop: TourStop; index: number; active: boolean; hidden: boolean }>) {
+  onStep,
+}: Readonly<{
+  stop: TourStop;
+  index: number;
+  active: boolean;
+  hidden: boolean;
+  /** Vers l'arrêt précédent (-1) ou suivant (1) */
+  onStep: (delta: -1 | 1) => void;
+}>) {
   const { lang } = useLang();
-  const { goToStop } = useCity();
   const t = translations.tour;
   const { project } = stop;
   const titleId = `stop-${stop.id}`;
@@ -122,18 +129,20 @@ function StopCard({
           <button
             type="button"
             className="icon-btn"
+            data-step="previous"
             aria-label={t.previous[lang]}
             disabled={index === 0}
-            onClick={() => goToStop(index - 1)}
+            onClick={() => onStep(-1)}
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </button>
           <button
             type="button"
             className="icon-btn"
+            data-step="next"
             aria-label={t.next[lang]}
             disabled={index === tourStops.length - 1}
-            onClick={() => goToStop(index + 1)}
+            onClick={() => onStep(1)}
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -207,6 +216,31 @@ export default function Journey() {
   useEffect(() => setMounted(true), []);
   const staged = mounted && status !== "off";
 
+  // Sur petit écran, précédent / suivant vivent dans la fiche : au changement
+  // d'arrêt, le bouton activé devient inerte avec elle. Le focus passe à son
+  // jumeau de la nouvelle fiche, pour enchaîner les arrêts au clavier ou au
+  // lecteur d'écran sans le rechercher à chaque pas.
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const stepped = useRef<"previous" | "next" | null>(null);
+  useEffect(() => {
+    const kind = stepped.current;
+    const card = cardsRef.current?.children[active];
+    if (!kind || !card) return;
+    stepped.current = null;
+    const focused = document.activeElement;
+    // Le lecteur a déjà porté le focus ailleurs : on ne le lui reprend pas
+    if (focused && focused !== document.body && !focused.closest("[inert]")) return;
+    const twin =
+      card.querySelector<HTMLButtonElement>(`[data-step="${kind}"]:enabled`) ??
+      card.querySelector<HTMLButtonElement>("[data-step]:enabled");
+    twin?.focus({ preventScroll: true });
+  }, [active]);
+
+  const step = (from: number, delta: -1 | 1) => {
+    stepped.current = delta < 0 ? "previous" : "next";
+    goToStop(from + delta);
+  };
+
   return (
     <section
       id="journey"
@@ -251,7 +285,7 @@ export default function Journey() {
               </ol>
             </nav>
 
-            <div className="stop-cards">
+            <div className="stop-cards" ref={cardsRef}>
               {tourStops.map((stop, i) => (
                 <StopCard
                   key={stop.id}
@@ -259,6 +293,7 @@ export default function Journey() {
                   index={i}
                   active={i === active}
                   hidden={staged && i !== active}
+                  onStep={(delta) => step(i, delta)}
                 />
               ))}
             </div>
