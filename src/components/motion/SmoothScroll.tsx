@@ -13,6 +13,10 @@ export function SmoothScroll() {
       autoRaf: true,
       duration: 1.1,
       anchors: true,
+      // Même choix que <MotionConfig reducedMotion="never"> : par défaut, Lenis
+      // coupe l'inertie et saute d'un coup aux ancres dès que le système demande
+      // de réduire les animations
+      respectReducedMotion: false,
     });
     setLenis(lenis);
     return () => {
