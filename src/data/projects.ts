@@ -1,10 +1,12 @@
+import type { Tone } from "../city/palette";
 import type { Localized } from "../i18n/translations";
 
-/** Couleur de la stack associée au projet (ombre de la fenêtre, fond du présentoir). */
-export type Tone = "violet" | "rouge" | "bleu" | "jaune";
+export type { Tone };
 
 export interface Shot {
   src: string;
+  /** Version 640 px */
+  small: string;
   srcSet: string;
   width: number;
   height: number;
@@ -45,6 +47,7 @@ function shot(slug: string): Shot {
   if (!large || !small) throw new Error(`Capture manquante : ${slug}`);
   return {
     src: large.src,
+    small: small.src,
     srcSet: `${small.src} ${small.width}w, ${large.src} ${large.width}w`,
     width: large.width,
     height: large.height,

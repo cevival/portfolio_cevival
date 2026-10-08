@@ -3,23 +3,24 @@ import { flushSync } from "react-dom";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { Logo } from "./Logo";
+import { useCity } from "./city/CityContext";
 import { useLang } from "../context/LangContext";
 import { useTheme } from "../context/ThemeContext";
 import { translations } from "../i18n/translations";
 import { site } from "../data/site";
 
 // Sections suivies pour savoir laquelle est à l'écran
-const SECTION_IDS = ["top", "projects", "stack", "experience", "about", "contact"];
+const SECTION_IDS = ["journey", "stack", "experience", "about", "contact"];
 
 /** Identifiant de la section qui occupe le milieu de la fenêtre. */
-function useActiveSection() {
-  const [active, setActive] = useState("top");
+function useSectionOnScreen() {
+  const [section, setSection] = useState("journey");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) setSection(entry.target.id);
         }
       },
       // Bande fine au milieu de la fenêtre : une seule section la traverse
@@ -32,15 +33,19 @@ function useActiveSection() {
     return () => observer.disconnect();
   }, []);
 
-  return active;
+  return section;
 }
 
 export default function Navbar() {
   const { lang, toggle: toggleLang } = useLang();
   const { theme, toggle: toggleTheme } = useTheme();
+  const { active } = useCity();
   const [menuOpen, setMenuOpen] = useState(false);
-  const active = useActiveSection();
+  const section = useSectionOnScreen();
   const t = translations.nav;
+
+  // La section du haut contient le hero puis la visite : c'est l'arrêt actif qui tranche
+  const current = section === "journey" ? (active >= 0 ? "projects" : "top") : section;
 
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 26 });
@@ -77,31 +82,20 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-rule bg-paper">
-      <nav
-        aria-label={t.main[lang]}
-        className="shell flex h-16 items-center justify-between gap-4 px-[var(--gutter)]"
-      >
-        <a
-          href="#top"
-          aria-label={t.home[lang]}
-          className="flex items-center gap-3 font-semibold"
-        >
-          <Logo className="h-6 w-auto" />
+    <header className="nav">
+      <nav aria-label={t.main[lang]} className="nav-bar">
+        <a href="#top" aria-label={t.home[lang]} className="flex items-center gap-3 font-semibold">
+          <Logo className="h-[1.375rem] w-auto" />
           <span className="hidden sm:inline">{site.name}</span>
         </a>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden items-center gap-0.5 md:flex">
           {links.map((link) => {
-            const current = active === link.id;
+            const here = current === link.id;
             return (
               <li key={link.id}>
-                <a
-                  href={`#${link.id}`}
-                  aria-current={current ? "true" : undefined}
-                  className="nav-link"
-                >
-                  {current && (
+                <a href={`#${link.id}`} aria-current={here ? "true" : undefined} className="nav-link">
+                  {here && (
                     <motion.span
                       layoutId="nav-pill"
                       className="nav-pill"
@@ -132,9 +126,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={switchTheme}
-            aria-label={
-              theme === "dark" ? t.theme_light[lang] : t.theme_dark[lang]
-            }
+            aria-label={theme === "dark" ? t.theme_light[lang] : t.theme_dark[lang]}
             className="icon-btn overflow-hidden"
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -146,19 +138,12 @@ export default function Navbar() {
                 exit={{ y: -14, rotate: 60, opacity: 0 }}
                 transition={{ duration: 0.18 }}
               >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </motion.span>
             </AnimatePresence>
           </button>
 
-          <a
-            href="#contact"
-            className="btn btn--solid btn--sm hidden md:inline-flex"
-          >
+          <a href="#contact" className="btn btn--solid btn--sm hidden md:inline-flex">
             {t.contact[lang]}
           </a>
 
@@ -173,17 +158,19 @@ export default function Navbar() {
             {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
+
+        <motion.div aria-hidden="true" className="nav-progress" style={{ scaleX: progress }} />
       </nav>
 
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             id="mobile-menu"
-            className="overflow-hidden border-t border-rule px-[var(--gutter)] md:hidden"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.7, 0.2, 1] }}
+            className="nav-menu bloc md:hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
           >
             <ul>
               {links.map((link) => (
@@ -191,29 +178,19 @@ export default function Navbar() {
                   <a
                     href={`#${link.id}`}
                     onClick={() => setMenuOpen(false)}
-                    className="block py-3.5 text-lg font-semibold"
+                    className="block py-3 text-lg font-semibold"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
             </ul>
-            <a
-              href="#contact"
-              onClick={() => setMenuOpen(false)}
-              className="btn btn--solid my-5 w-full"
-            >
+            <a href="#contact" onClick={() => setMenuOpen(false)} className="btn btn--solid mt-4 w-full">
               {t.contact[lang]}
             </a>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <motion.div
-        aria-hidden="true"
-        className="scroll-progress"
-        style={{ scaleX: progress }}
-      />
     </header>
   );
 }

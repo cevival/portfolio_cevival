@@ -4,19 +4,15 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { LangProvider, useLang } from "../context/LangContext";
 import { translations } from "../i18n/translations";
 import { site } from "../data/site";
-import { featured, more } from "../data/projects";
 import Navbar from "./Navbar";
+import { CityProvider } from "./city/CityContext";
+import { CityStage } from "./city/CityStage";
 import { SmoothScroll } from "./motion/SmoothScroll";
-import { Ticker } from "./motion/Ticker";
-import Hero from "./sections/Hero";
-import Projects from "./sections/Projects";
+import Journey from "./sections/Journey";
 import Stack from "./sections/Stack";
 import Experience from "./sections/Experience";
 import About from "./sections/About";
 import Contact from "./sections/Contact";
-
-// Domaines des sites en ligne, pour le bandeau défilant sous le hero
-const liveDomains = [...featured, ...more].map((project) => project.domain);
 
 function Footer() {
   const { lang } = useLang();
@@ -38,20 +34,27 @@ export default function Portfolio() {
     <MotionConfig reducedMotion="never">
       <ThemeProvider>
         <LangProvider>
-          <SmoothScroll />
-          <Navbar />
-          <div className="shell shell--rails">
-            <main>
-              <Hero />
-              <Ticker items={liveDomains} />
-              <Projects />
-              <Stack />
-              <Experience />
-              <About />
-              <Contact />
-            </main>
-            <Footer />
-          </div>
+          <CityProvider>
+            <SmoothScroll />
+            {/* La ville, fixe derrière la page */}
+            <CityStage />
+            <Navbar />
+            <div className="page">
+              <main>
+                <Journey />
+                {/* Le rideau : des sections opaques qui passent sur la ville */}
+                <div className="curtain">
+                  <div className="mx-auto max-w-[76rem]">
+                    <Stack />
+                    <Experience />
+                    <About />
+                    <Contact />
+                    <Footer />
+                  </div>
+                </div>
+              </main>
+            </div>
+          </CityProvider>
         </LangProvider>
       </ThemeProvider>
     </MotionConfig>

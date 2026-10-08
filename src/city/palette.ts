@@ -5,6 +5,11 @@ export type Theme = "light" | "dark";
 /** Couleur d'accent d'un projet, tirée de la stack (Astro/PHP, Laravel, TypeScript, JavaScript). */
 export type Tone = "violet" | "rouge" | "bleu" | "jaune";
 
+const TONES: readonly Tone[] = ["violet", "rouge", "bleu", "jaune"];
+
+/** Couleur de l'arrêt n° `index` : les quatre couleurs de la stack, à tour de rôle */
+export const toneAt = (index: number): Tone => TONES[index % TONES.length];
+
 /** Chaque maillage porte un rôle ; changer de thème, c'est recolorer les rôles. */
 export type Role =
   | "slab"

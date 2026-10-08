@@ -27,6 +27,12 @@ export const translations = {
       fr: "Je conçois, développe et mets en production des sites et des applications web, du back-end Laravel à l'interface Astro ou React.",
       en: "I design, build and ship websites and web applications, from the Laravel back end to the Astro or React front end.",
     },
+    tagline: {
+      fr: "Chaque site que j'ai livré est un bâtiment de cette ville. Faites défiler pour la visiter.",
+      en: "Every site I've shipped is a building in this town. Scroll to take the tour.",
+    },
+    cta_tour: { fr: "Commencer la visite", en: "Start the tour" },
+    next_lot: { fr: "Prochain : votre projet ?", en: "Next: your project?" },
     cta_projects: { fr: "Voir les projets", en: "View projects" },
     cta_contact: { fr: "Me contacter", en: "Contact me" },
     live: { fr: "en ligne", en: "live" },
@@ -39,6 +45,24 @@ export const translations = {
       fr: "Fenêtres déplaçables. Un clic ouvre le site.",
       en: "Drag the windows around. Click to open the site.",
     },
+  },
+  tour: {
+    label: { fr: "Visite guidée des projets", en: "Guided tour of the projects" },
+    stops: { fr: "Arrêts de la visite", en: "Tour stops" },
+    previous: { fr: "Arrêt précédent", en: "Previous stop" },
+    next: { fr: "Arrêt suivant", en: "Next stop" },
+    skip: { fr: "Passer la visite", en: "Skip the tour" },
+    visit: { fr: "Voir", en: "Visit" },
+    code: { fr: "Code source", en: "Source code" },
+    lot_title: { fr: "Votre projet ?", en: "Your project?" },
+    lot_kind: { fr: "Parcelle libre", en: "Vacant lot" },
+    lot_text: {
+      fr: "Cette parcelle est libre. Un site vitrine, une application métier, une refonte : parlons de ce que vous voulez y construire.",
+      en: "This lot is free. A showcase site, a business app, a redesign: let's talk about what you want to build here.",
+    },
+    lot_cta: { fr: "Me contacter", en: "Contact me" },
+    // Panneau du terrain dans la scène : une petite ligne, puis la grande
+    lot_sign: { fr: "Prochain chantier\nVotre projet ?", en: "Next build\nYour project?" },
   },
   projects: {
     title: { fr: "Projets en production", en: "Projects in production" },

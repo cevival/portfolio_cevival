@@ -16,7 +16,7 @@ import { builders, lotBillboard } from "./buildings";
 import { createGround } from "./ground";
 import { createKit } from "./kit";
 import { CITY, LOTS, finalePose, tourConfig, type StopId } from "./layout";
-import { palettes, type Theme, type Tone } from "./palette";
+import { palettes, toneAt, type Theme } from "./palette";
 import { createProps } from "./props";
 import { createScreens } from "./screens";
 import { createSigns, type Sign } from "./signs";
@@ -67,7 +67,7 @@ export interface CityHandle {
 
 // Focale longue : l'aspect d'une illustration isométrique, avec de la vraie profondeur
 const FOV = 26;
-// Sous ce rapport largeur / hauteur, le champ vertical s'ouvre pour garder la même largeur de ville
+// Rapport largeur / hauteur pour lequel les poses de la visite sont réglées
 const MIN_ASPECT = 1.25;
 // Vitesse à laquelle la caméra rattrape sa pose cible
 const DAMPING = 12;
@@ -82,8 +82,7 @@ const SLOW_FRAME_MS = 22;
 const LIGHT_UP = 5;
 // En vue d'ensemble, toute la ville est à mi-régime
 const OVERVIEW_GLOW = 0.45;
-// Les couleurs de la stack, dans l'ordre des parcelles
-const TONES: readonly Tone[] = ["violet", "rouge", "bleu", "jaune"];
+
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
@@ -155,7 +154,7 @@ export function createCity(options: CityOptions): CityHandle {
       signs,
       screens,
       lotIndex,
-      tone: TONES[lotIndex % TONES.length],
+      tone: toneAt(lotIndex),
       title: stop?.title ?? lot.id,
       facing: tourConfig.stops[lotIndex].azimuth,
       lotLabel: options.lotLabel,
@@ -195,6 +194,18 @@ export function createCity(options: CityOptions): CityHandle {
   function applyFraming() {
     if (framingX === 0 && framingY === 0) camera.clearViewOffset();
     else camera.setViewOffset(width, height, -framingX * width, framingY * height, width, height);
+  }
+
+  // Le sujet n'occupe que la part du cadre laissée libre par le texte : quand
+  // cette part est étroite (texte à côté, ou écran en hauteur), le champ
+  // s'ouvre pour que la ville y tienne toujours en entier.
+  function applyLens() {
+    const base = Math.tan((FOV * Math.PI) / 360);
+    const freeWidth = 1 - 2 * Math.abs(framingX);
+    const freeHeight = 1 - 2 * Math.abs(framingY);
+    const half = base * Math.max(1 / freeHeight, MIN_ASPECT / (camera.aspect * freeWidth));
+    camera.fov = (Math.atan(half) * 360) / Math.PI;
+    camera.updateProjectionMatrix();
   }
 
   function applyPose(pose: Pose) {
@@ -262,7 +273,7 @@ export function createCity(options: CityOptions): CityHandle {
 
     // La balise flotte au-dessus de l'écran de l'arrêt actif
     const pinned = active >= 0 ? anchors.get(`label:${LOTS[active].id}`) : undefined;
-    props.setBeacon(pinned ?? null, TONES[Math.max(0, active) % TONES.length], active >= 0 ? glow[active] : 0);
+    props.setBeacon(pinned ?? null, toneAt(Math.max(0, active)), active >= 0 ? glow[active] : 0);
     props.tick(now / 1000, dt);
 
     current = snap ? goal : mixPose(current, goal, 1 - Math.exp(-DAMPING * dt));
@@ -341,7 +352,7 @@ export function createCity(options: CityOptions): CityHandle {
       framingX = x;
       framingY = y;
       applyFraming();
-      camera.updateProjectionMatrix();
+      applyLens();
     },
 
     setLotLabel(text) {
@@ -366,13 +377,9 @@ export function createCity(options: CityOptions): CityHandle {
       width = w;
       height = h;
       renderer.setSize(w, h, false);
-      const aspect = w / h;
-      camera.aspect = aspect;
-      // Écran étroit : on ouvre le champ vertical pour garder la même largeur de ville
-      const half = Math.tan((FOV * Math.PI) / 360) * Math.max(1, MIN_ASPECT / aspect);
-      camera.fov = (Math.atan(half) * 360) / Math.PI;
+      camera.aspect = w / h;
       applyFraming();
-      camera.updateProjectionMatrix();
+      applyLens();
     },
 
     start() {
