@@ -903,7 +903,30 @@
     position: relative;
     inset: auto;
     min-height: 100svh;
-    justify-content: center;
+  }
+  /* La page défile librement : le hero n'a plus à se resserrer sur un écran bas */
+  :is(html:not(.js), html[data-city="off"]) .hero-socials {
+    display: flex;
+  }
+  /* Sur petit écran le texte recouvre le bas de l'image de la ville : le hero
+     reprend le voile que portait le bloc épinglé */
+  @media (max-width: 63.99rem) {
+    :is(html:not(.js), html[data-city="off"]) .hero {
+      isolation: isolate;
+    }
+    :is(html:not(.js), html[data-city="off"]) .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      /* Plus haut que celui de la visite : ici le texte monte jusqu'au pied de la ville */
+      background: linear-gradient(
+        0deg,
+        var(--paper) 0%,
+        color-mix(in srgb, var(--paper) 92%, transparent) 46%,
+        transparent 72%
+      );
+    }
   }
   :is(html:not(.js), html[data-city="off"]) .tour {
     position: relative;
