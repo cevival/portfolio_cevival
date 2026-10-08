@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   mixPose,
+  placeOf,
   progressOf,
   stopProgress,
   tourLength,
@@ -192,5 +193,51 @@ describe("stopProgress", () => {
   it("borne l'indice", () => {
     expect(stopProgress(-2, cfg)).toBe(stopProgress(0, cfg));
     expect(stopProgress(99, cfg)).toBe(stopProgress(3, cfg));
+  });
+});
+
+describe("placeOf", () => {
+  // Fenêtre de 900 px : 3 hauteurs épinglées, donc une section de 4 hauteurs
+  const viewport = 900;
+  const pinned = tourLength(cfg) * viewport;
+  const height = pinned + viewport;
+
+  it("situe le lecteur sur le hero en haut de page", () => {
+    expect(placeOf(0, height, viewport, cfg)).toEqual({ kind: "hero" });
+  });
+
+  it("le situe sur l'arrêt où la caméra est posée", () => {
+    cfg.stops.forEach((_, i) => {
+      const scrolled = stopProgress(i, cfg) * pinned;
+      expect(placeOf(scrolled, height, viewport, cfg)).toEqual({ kind: "stop", index: i });
+    });
+  });
+
+  it("reste sur le dernier arrêt pendant que le bloc épinglé quitte l'écran", () => {
+    expect(placeOf(pinned + 400, height, viewport, cfg)).toEqual({ kind: "stop", index: 3 });
+  });
+
+  it("le situe après la visite, à la distance défilée depuis sa fin", () => {
+    expect(placeOf(height, height, viewport, cfg)).toEqual({ kind: "after", past: 0 });
+    expect(placeOf(height + 500, height, viewport, cfg)).toEqual({ kind: "after", past: 500 });
+  });
+
+  it("tient la visite pour dépassée dès qu'elle ne dépasse plus de la barre de navigation", () => {
+    // Lien vers la section suivante : elle s'arrête sous la barre, 88 px avant la fin de la visite
+    expect(placeOf(height - 88, height, viewport, cfg, 88)).toEqual({ kind: "after", past: -88 });
+    expect(placeOf(height - 89, height, viewport, cfg, 88)).toEqual({ kind: "stop", index: 3 });
+    expect(placeOf(height - 88, height, viewport, cfg)).toEqual({ kind: "stop", index: 3 });
+  });
+
+  it("tolère l'arrondi au pixel d'un défilement arrêté sur la section suivante", () => {
+    const place = placeOf(height - 88.4, height, viewport, cfg, 88);
+    expect(place.kind).toBe("after");
+    expect(place.kind === "after" && place.past).toBeCloseTo(-88.4, 6);
+  });
+
+  it("ne déplace personne quand la section n'est pas mesurable", () => {
+    expect(placeOf(0, 0, viewport, cfg)).toEqual({ kind: "hero" });
+    expect(placeOf(500, NaN, viewport, cfg)).toEqual({ kind: "hero" });
+    expect(placeOf(NaN, height, viewport, cfg)).toEqual({ kind: "hero" });
   });
 });

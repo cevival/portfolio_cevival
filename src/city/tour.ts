@@ -84,6 +84,37 @@ export function stopProgress(index: number, cfg: TourConfig) {
   return (cfg.heroSpan + i * cfg.stopSpan) / tourLength(cfg);
 }
 
+/**
+ * Ce que le lecteur a sous les yeux : le hero, un arrêt de la visite, ou la
+ * suite de la page, `past` pixels après la fin de la section (négatif tant que
+ * la barre de navigation la recouvre encore).
+ */
+export type Place =
+  | { kind: "hero" }
+  | { kind: "stop"; index: number }
+  | { kind: "after"; past: number };
+
+/**
+ * Situe le lecteur d'après la section de la visite : `scrolled` pixels défilés
+ * depuis son haut, `height` sa hauteur, `viewport` celle de son bloc épinglé.
+ * `clearance` est la hauteur gardée libre sous la barre de navigation : la
+ * visite est dépassée dès qu'elle ne dépasse plus de la barre.
+ */
+export function placeOf(
+  scrolled: number,
+  height: number,
+  viewport: number,
+  cfg: TourConfig,
+  clearance = 0,
+): Place {
+  // Section pas encore mesurable : rien ne dit où est le lecteur
+  if (!(height > 0) || !Number.isFinite(scrolled)) return { kind: "hero" };
+  // Au pixel près : un défilement arrêté sur la section suivante tombe rarement juste
+  if (scrolled + clearance > height - 1) return { kind: "after", past: scrolled - height };
+  const { active } = tourState(progressOf(scrolled, height - viewport), cfg);
+  return active < 0 ? { kind: "hero" } : { kind: "stop", index: active };
+}
+
 export function tourState(progress: number, cfg: TourConfig): TourState {
   const last = cfg.stops.length - 1;
   // Une progression non finie (section de hauteur nulle) vaut le début
