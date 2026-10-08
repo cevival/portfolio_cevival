@@ -11,11 +11,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.1",
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/funnel-display": "^5.3.0",
+    "@fontsource-variable/funnel-sans": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^19.2.14",
@@ -26,6 +30,13 @@
     "motion": "^14.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/three": "^0.186.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.3"
   }
 }
