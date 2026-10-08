@@ -131,10 +131,16 @@ try {
 } catch (error) {
   failure = error;
 } finally {
-  await sleep(500);
+  // On laisse Chrome se fermer de lui-même (Browser.close) avant de forcer :
+  // tué trop tôt, ses processus enfants gardent le profil verrouillé.
+  await Promise.race([new Promise((resolve) => browser.once("exit", resolve)), sleep(5000)]);
   browser.kill();
-  await sleep(500);
-  rmSync(profile, { recursive: true, force: true });
+  // Un dossier temporaire resté là ne vaut pas un échec
+  try {
+    rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 500 });
+  } catch {
+    console.warn(`Profil temporaire non supprimé : ${profile}`);
+  }
 }
 
 if (failure) {
