@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { readPreference, writePreference } from "../lib/storage";
 
 type Theme = "light" | "dark";
 
@@ -26,7 +27,7 @@ export function ThemeProvider({
 
   useEffect(() => {
     // Check localStorage first, then system preference
-    const stored = localStorage.getItem("portfolio-theme") as Theme | null;
+    const stored = readPreference("portfolio-theme");
     if (stored === "light" || stored === "dark") {
       setTheme(stored);
       applyTheme(stored);
@@ -51,7 +52,7 @@ export function ThemeProvider({
   const toggle = useCallback(() => {
     setTheme((prev) => {
       const next: Theme = prev === "light" ? "dark" : "light";
-      localStorage.setItem("portfolio-theme", next);
+      writePreference("portfolio-theme", next);
       applyTheme(next);
       return next;
     });

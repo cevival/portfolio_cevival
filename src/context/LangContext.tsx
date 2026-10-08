@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from "react";
 import type { Lang } from "../i18n/translations";
+import { readPreference, writePreference } from "../lib/storage";
 
 interface LangContextType {
   lang: Lang;
@@ -24,7 +25,7 @@ export function LangProvider({
   const [lang, setLang] = useState<Lang>("fr");
 
   useEffect(() => {
-    const stored = localStorage.getItem("portfolio-lang") as Lang | null;
+    const stored = readPreference("portfolio-lang");
     if (stored === "fr" || stored === "en") setLang(stored);
   }, []);
 
@@ -36,7 +37,7 @@ export function LangProvider({
   const toggle = useCallback(() => {
     setLang((prev) => {
       const next: Lang = prev === "fr" ? "en" : "fr";
-      localStorage.setItem("portfolio-lang", next);
+      writePreference("portfolio-lang", next);
       return next;
     });
   }, []);
