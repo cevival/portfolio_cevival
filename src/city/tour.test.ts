@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  mixPose,
   progressOf,
   stopProgress,
   tourLength,
@@ -132,6 +133,25 @@ describe("tourState", () => {
       expect(state.active).toBeGreaterThanOrEqual(-1);
     }
     near(tourState(NaN, cfg).pose, cfg.overview);
+  });
+});
+
+describe("mixPose", () => {
+  const from = pose(0, 350, 20);
+  const to = pose(10, 10, 40);
+
+  it("rend la pose de départ à 0 et celle d'arrivée à 1", () => {
+    near(mixPose(from, to, 0), from);
+    const end = mixPose(from, to, 1);
+    expect(end.target[0]).toBeCloseTo(10, 6);
+    expect(end.distance).toBeCloseTo(40, 6);
+    // 350° + 20° = 370°, soit le même angle que 10°
+    expect(Math.cos(end.azimuth)).toBeCloseTo(Math.cos(to.azimuth), 6);
+    expect(Math.sin(end.azimuth)).toBeCloseTo(Math.sin(to.azimuth), 6);
+  });
+
+  it("interpole la distance sans prise de hauteur", () => {
+    expect(mixPose(from, to, 0.5).distance).toBeCloseTo(30, 6);
   });
 });
 

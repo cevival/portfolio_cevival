@@ -45,6 +45,11 @@ function turn(a: number, b: number) {
   return ((((b - a) % full) + full + Math.PI) % full) - Math.PI;
 }
 
+/** Pose intermédiaire entre deux poses, en tournant par le plus court chemin. */
+export function mixPose(from: Pose, to: Pose, t: number): Pose {
+  return blend(from, to, t, 0);
+}
+
 function blend(from: Pose, to: Pose, t: number, lift: number): Pose {
   const dx = to.target[0] - from.target[0];
   const dy = to.target[1] - from.target[1];
