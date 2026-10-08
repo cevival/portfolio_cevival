@@ -17,6 +17,7 @@ import { createGround } from "./ground";
 import { createKit } from "./kit";
 import { CITY, LOTS, finalePose, tourConfig, type StopId } from "./layout";
 import { palettes, type Theme, type Tone } from "./palette";
+import { createProps } from "./props";
 import { createScreens } from "./screens";
 import { createSigns, type Sign } from "./signs";
 import { mixPose, tourState, type Pose } from "./tour";
@@ -72,6 +73,11 @@ const MIN_ASPECT = 1.25;
 const DAMPING = 12;
 const THEME_DURATION = 0.7;
 const MAX_PIXEL_RATIO = 1.5;
+// Résolution adaptative : après quelques images de mise en route, on mesure
+// les suivantes ; trop lentes, le canvas repasse à un pixel par pixel CSS.
+const WARM_UP_FRAMES = 12;
+const SAMPLED_FRAMES = 40;
+const SLOW_FRAME_MS = 22;
 // Vitesse à laquelle un bâtiment s'allume ou s'éteint
 const LIGHT_UP = 5;
 // En vue d'ensemble, toute la ville est à mi-régime
@@ -97,7 +103,8 @@ export function createCity(options: CityOptions): CityHandle {
   renderer.shadowMap.type = PCFShadowMap;
   // La scène est statique : les ombres ne sont calculées qu'à la demande
   renderer.shadowMap.autoUpdate = false;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
+  renderer.setPixelRatio(pixelRatio);
 
   const scene = new Scene();
   const background = new Color(palette.paper);
@@ -166,6 +173,9 @@ export function createCity(options: CityOptions): CityHandle {
   });
   windows.build(scene);
 
+  const props = createProps(kit, palette);
+  scene.add(props.group);
+
   // Éclairage de chaque parcelle, de 0 (au repos) à 1 (arrêt actif)
   const glow = LOTS.map(() => OVERVIEW_GLOW);
   let active = -1;
@@ -211,6 +221,7 @@ export function createCity(options: CityOptions): CityHandle {
     ground.setPalette(a, b, mix);
     windows.setPalette(a, b, mix);
     screens.setPalette(a, b, mix);
+    props.setPalette(a, b, mix);
     // Les enseignes sont redessinées d'un coup, à mi-parcours
     signs.setTheme(mix < 0.5 ? from : to);
     background.lerpColors(new Color(a.paper), new Color(b.paper), mix);
@@ -227,6 +238,8 @@ export function createCity(options: CityOptions): CityHandle {
   let lost = false;
   let frame = 0;
   let last = 0;
+  let framesSeen = 0;
+  let sampledMs = 0;
 
   function render(now: number) {
     const dt = Math.min(0.05, last ? (now - last) / 1000 : 0);
@@ -247,11 +260,26 @@ export function createCity(options: CityOptions): CityHandle {
     screens.setActive(glow);
     windows.tick(now / 1000);
 
+    // La balise flotte au-dessus de l'écran de l'arrêt actif
+    const pinned = active >= 0 ? anchors.get(`label:${LOTS[active].id}`) : undefined;
+    props.setBeacon(pinned ?? null, TONES[Math.max(0, active) % TONES.length], active >= 0 ? glow[active] : 0);
+    props.tick(now / 1000, dt);
+
     current = snap ? goal : mixPose(current, goal, 1 - Math.exp(-DAMPING * dt));
     snap = false;
     applyPose(current);
 
     renderer.render(scene, camera);
+
+    if (pixelRatio > 1 && framesSeen < WARM_UP_FRAMES + SAMPLED_FRAMES) {
+      framesSeen++;
+      if (framesSeen > WARM_UP_FRAMES) sampledMs += dt * 1000;
+      if (framesSeen === WARM_UP_FRAMES + SAMPLED_FRAMES && sampledMs / SAMPLED_FRAMES > SLOW_FRAME_MS) {
+        pixelRatio = 1;
+        renderer.setPixelRatio(1);
+        handle.resize();
+      }
+    }
   }
 
   function loop(now: number) {
@@ -290,6 +318,7 @@ export function createCity(options: CityOptions): CityHandle {
         active = state.active;
       } else if (view.kind === "finale") {
         goal = finalePose(view.progress);
+        active = -1;
       } else {
         goal = view.pose;
         active = view.active ?? -1;
@@ -364,6 +393,7 @@ export function createCity(options: CityOptions): CityHandle {
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
       ground.dispose();
+      props.dispose();
       windows.dispose();
       screens.dispose();
       signs.dispose();
