@@ -53,9 +53,9 @@ La section du haut est très haute, et son contenu reste épinglé à l'écran. 
 La ville compte douze parcelles, quatre colonnes sur trois rangées : onze projets et un terrain à bâtir.
 
 1. Ajouter l'entrée dans `src/data/projects.ts` et ses deux captures dans `src/assets/projects/` (`<slug>.webp` en 1280 px, `<slug>-sm.webp` en 640 px).
-2. Ajouter son identifiant à `STOP_IDS` et son point de vue à `VIEWS` dans `src/city/layout.ts`. Si la grille est pleine, augmenter `COLS` ou `ROWS`.
+2. Ajouter son identifiant à `STOP_IDS` et son point de vue à `VIEWS` dans `src/city/layout.ts`. La grille est pleine avec ces douze arrêts : pour en ajouter un, augmenter `COLS` ou `ROWS`. La visite s'allonge d'une demi-hauteur d'écran par arrêt.
 3. Écrire son bâtiment dans `src/city/buildings/` et l'enregistrer dans `buildings/index.ts`.
-4. Regarder le résultat sur la page de labo (`npm run dev`, puis `/lab?focus=<slug>&lit=1`), adapter les tests de `layout.test.ts`, puis régénérer les images.
+4. Regarder le résultat sur la page de labo (`npm run dev`, puis `/lab?focus=<slug>&lit=1`), adapter les tests de `layout.test.ts` (ils figent douze arrêts et sept hauteurs d'écran), puis régénérer les images.
 
 ## Régénérer les images de la ville
 
