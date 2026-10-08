@@ -6,6 +6,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  // Adresse publique : sert aux liens absolus (carte de partage, URL canonique)
+  site: 'https://guillaume-desplan.vercel.app',
   integrations: [react()],
 
   vite: {

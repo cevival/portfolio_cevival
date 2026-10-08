@@ -293,7 +293,21 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: var(--paper);
+    /* L'image d'attente : la ville telle que la scène la dessinera, cadrée de
+       la même façon (en haut sur petit écran, à droite du texte sinon). */
+    background: var(--paper) var(--poster-light-tall) 50% 33% / cover no-repeat;
+  }
+  .dark .stage {
+    background-image: var(--poster-dark-tall);
+  }
+  @media (min-width: 64rem) {
+    .stage {
+      background-image: var(--poster-light-wide);
+      background-position: 69% 50%;
+    }
+    .dark .stage {
+      background-image: var(--poster-dark-wide);
+    }
   }
   .stage canvas {
     display: block;
@@ -879,6 +893,8 @@
     position: relative;
     inset: auto;
     display: block;
+    /* L'image de la ville reste derrière le hero, pas derrière la liste */
+    background: var(--paper);
     padding-block: 1rem clamp(4rem, 9vw, 7rem);
     pointer-events: auto;
   }

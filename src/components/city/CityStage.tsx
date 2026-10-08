@@ -1,6 +1,10 @@
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import type { CityHandle } from "../../city";
 import { tourConfig } from "../../city/layout";
+import posterDarkTall from "../../assets/city/poster-dark-tall.webp";
+import posterDarkWide from "../../assets/city/poster-dark-wide.webp";
+import posterLightTall from "../../assets/city/poster-light-tall.webp";
+import posterLightWide from "../../assets/city/poster-light-wide.webp";
 import { progressOf, tourState } from "../../city/tour";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -14,6 +18,16 @@ const FRAMING_WIDE = { x: 0.19, y: 0 };
 const FRAMING_NARROW = { x: 0, y: 0.17 };
 // Délai laissé au navigateur pour rendre un contexte WebGL perdu
 const CONTEXT_GRACE_MS = 4000;
+
+// Images de la ville tirées de la scène, au même cadrage : affichées tout de
+// suite, puis recouvertes par le canvas. Le CSS choisit selon le thème et la
+// largeur ; seule celle qui sert est téléchargée.
+const posters = {
+  "--poster-dark-wide": `url(${posterDarkWide.src})`,
+  "--poster-dark-tall": `url(${posterDarkTall.src})`,
+  "--poster-light-wide": `url(${posterLightWide.src})`,
+  "--poster-light-tall": `url(${posterLightTall.src})`,
+} as React.CSSProperties;
 
 function hasWebGL() {
   try {
@@ -225,7 +239,7 @@ export function CityStage() {
   }, [lang]);
 
   return (
-    <div className="stage" data-status={status} aria-hidden="true">
+    <div className="stage" data-status={status} style={posters} aria-hidden="true">
       <canvas ref={canvasRef} />
     </div>
   );
