@@ -90,6 +90,7 @@ export function CityStage() {
       // La mise en page de repli n'est plus pilotée par le défilement
       pin.style.removeProperty("--hero");
       pin.style.removeProperty("--tour");
+      pin.removeAttribute("data-hero-out");
       city?.dispose();
       city = null;
       cityRef.current = null;
@@ -146,6 +147,8 @@ export function CityStage() {
         // Les fondus passent par des propriétés CSS : aucun rendu React à chaque image
         pin.style.setProperty("--hero", state.heroFade.toFixed(3));
         pin.style.setProperty("--tour", state.tourFade.toFixed(3));
+        // Effacé avant que le premier arrêt ne prenne le relais : ni clic ni focus sur du texte invisible
+        pin.toggleAttribute("data-hero-out", state.heroFade === 0);
         publish(state.active);
         city?.setView({ kind: "journey", progress });
         if (state.heroFade > 0) placeChips();

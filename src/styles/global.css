@@ -481,6 +481,10 @@
   .journey-pin[data-phase="tour"] .hero {
     pointer-events: none;
   }
+  /* Entièrement effacé (voir CityStage) : ses liens ne se cliquent ni ne se tabulent plus */
+  .journey-pin[data-hero-out] .hero {
+    visibility: hidden;
+  }
 
   .scroll-hint {
     position: absolute;
