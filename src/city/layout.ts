@@ -75,18 +75,18 @@ const rad = (degrees: number) => (degrees * Math.PI) / 180;
  * autour de la ville d'un arrêt à l'autre.
  */
 const VIEWS: Record<StopId, { az: number; el: number; dist: number; y: number }> = {
-  qualitrack: { az: 40, el: 30, dist: 46, y: 6 },
-  "dr-salti": { az: 52, el: 33, dist: 34, y: 3 },
-  sasportas: { az: 36, el: 33, dist: 34, y: 3 },
-  "points-rambrouch": { az: 54, el: 34, dist: 34, y: 3 },
-  "thill-loehr": { az: 38, el: 32, dist: 36, y: 4 },
-  "jour-de-rien": { az: 50, el: 33, dist: 34, y: 3.5 },
-  marque: { az: 34, el: 33, dist: 34, y: 3.5 },
-  lbshop: { az: 56, el: 34, dist: 32, y: 3 },
-  "lbdigital-site": { az: 40, el: 33, dist: 34, y: 3 },
-  "sc-conduite": { az: 54, el: 34, dist: 32, y: 3 },
-  portfolio: { az: 36, el: 33, dist: 32, y: 3 },
-  lot: { az: 48, el: 32, dist: 36, y: 4 },
+  qualitrack: { az: 40, el: 31, dist: 52, y: 7.6 },
+  "dr-salti": { az: 52, el: 34, dist: 38, y: 4.4 },
+  sasportas: { az: 36, el: 34, dist: 38, y: 4.2 },
+  "points-rambrouch": { az: 54, el: 34, dist: 40, y: 5 },
+  "thill-loehr": { az: 38, el: 33, dist: 41, y: 5 },
+  "jour-de-rien": { az: 50, el: 34, dist: 42, y: 5.6 },
+  marque: { az: 34, el: 34, dist: 42, y: 5.6 },
+  lbshop: { az: 56, el: 34, dist: 38, y: 4.4 },
+  "lbdigital-site": { az: 40, el: 34, dist: 38, y: 4.4 },
+  "sc-conduite": { az: 54, el: 34, dist: 38, y: 4.4 },
+  portfolio: { az: 36, el: 34, dist: 40, y: 4.8 },
+  lot: { az: 48, el: 33, dist: 42, y: 5 },
 };
 
 const CENTER: Pose["target"] = [0, 2, 0];

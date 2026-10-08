@@ -12,11 +12,15 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
+import { builders, lotBillboard } from "./buildings";
 import { createGround } from "./ground";
 import { createKit } from "./kit";
-import { finalePose, tourConfig, type StopId } from "./layout";
-import { palettes, type Theme } from "./palette";
+import { CITY, LOTS, finalePose, tourConfig, type StopId } from "./layout";
+import { palettes, type Theme, type Tone } from "./palette";
+import { createScreens } from "./screens";
+import { createSigns, type Sign } from "./signs";
 import { mixPose, tourState, type Pose } from "./tour";
+import { createWindows } from "./windows";
 
 export interface CityStop {
   id: StopId;
@@ -44,7 +48,7 @@ export type CityView =
   /** 0 → 1 sur la section contact */
   | { kind: "finale"; progress: number }
   /** Caméra libre, pour la page de labo et les captures */
-  | { kind: "free"; pose: Pose };
+  | { kind: "free"; pose: Pose; active?: number };
 
 export interface CityHandle {
   setView(view: CityView): void;
@@ -68,6 +72,12 @@ const MIN_ASPECT = 1.25;
 const DAMPING = 12;
 const THEME_DURATION = 0.7;
 const MAX_PIXEL_RATIO = 1.5;
+// Vitesse à laquelle un bâtiment s'allume ou s'éteint
+const LIGHT_UP = 5;
+// En vue d'ensemble, toute la ville est à mi-régime
+const OVERVIEW_GLOW = 0.45;
+// Les couleurs de la stack, dans l'ordre des parcelles
+const TONES: readonly Tone[] = ["violet", "rouge", "bleu", "jaune"];
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
@@ -123,6 +133,44 @@ export function createCity(options: CityOptions): CityHandle {
 
   const anchors = new Map<string, Vector3>();
 
+  // ─── Les douze parcelles
+  const windows = createWindows(palette);
+  const signs = createSigns(theme);
+  const screens = createScreens(kit, signs, palette, renderer.capabilities.getMaxAnisotropy());
+
+  let lotSign: Sign | null = null;
+
+  LOTS.forEach((lot, lotIndex) => {
+    const stop = options.stops.find((candidate) => candidate.id === lot.id);
+    const group = builders[lot.id]({
+      kit,
+      windows,
+      signs,
+      screens,
+      lotIndex,
+      tone: TONES[lotIndex % TONES.length],
+      title: stop?.title ?? lot.id,
+      facing: tourConfig.stops[lotIndex].azimuth,
+      lotLabel: options.lotLabel,
+    });
+    group.position.set(lot.x, CITY.plate, lot.z);
+    scene.add(group);
+
+    if (stop?.screen) screens.load(lotIndex, stop.screen, stop.domain ?? "");
+    // L'étiquette HTML s'accroche au-dessus de l'écran, ou du panneau pour le terrain
+    const anchor =
+      screens.anchor(lotIndex) ??
+      (group.userData.anchor instanceof Vector3 ? group.localToWorld(group.userData.anchor.clone()) : null);
+    if (anchor) anchors.set(`label:${lot.id}`, anchor);
+    if (group.userData.sign) lotSign = group.userData.sign as Sign;
+  });
+  windows.build(scene);
+
+  // Éclairage de chaque parcelle, de 0 (au repos) à 1 (arrêt actif)
+  const glow = LOTS.map(() => OVERVIEW_GLOW);
+  let active = -1;
+  let allLit = false;
+
   // ─── Caméra
   let goal: Pose = tourConfig.overview;
   let current: Pose = goal;
@@ -161,6 +209,10 @@ export function createCity(options: CityOptions): CityHandle {
     const b = palettes[to];
     kit.setTheme(from, to, mix);
     ground.setPalette(a, b, mix);
+    windows.setPalette(a, b, mix);
+    screens.setPalette(a, b, mix);
+    // Les enseignes sont redessinées d'un coup, à mi-parcours
+    signs.setTheme(mix < 0.5 ? from : to);
     background.lerpColors(new Color(a.paper), new Color(b.paper), mix);
     fog.color.copy(background);
     hemisphere.color.lerpColors(new Color(a.sky), new Color(b.sky), mix);
@@ -184,6 +236,16 @@ export function createCity(options: CityOptions): CityHandle {
       themeMix = Math.min(1, themeMix + dt / THEME_DURATION);
       paint(themeFrom, theme, smooth(themeMix));
     }
+
+    const ease = snap ? 1 : 1 - Math.exp(-LIGHT_UP * dt);
+    glow.forEach((value, i) => {
+      const target = allLit ? 1 : active < 0 ? OVERVIEW_GLOW : i === active ? 1 : 0;
+      glow[i] = value + (target - value) * ease;
+    });
+    windows.setActive(glow);
+    signs.setActive(glow);
+    screens.setActive(glow);
+    windows.tick(now / 1000);
 
     current = snap ? goal : mixPose(current, goal, 1 - Math.exp(-DAMPING * dt));
     snap = false;
@@ -221,9 +283,17 @@ export function createCity(options: CityOptions): CityHandle {
 
   const handle: CityHandle = {
     setView(view) {
-      if (view.kind === "journey") goal = tourState(view.progress, tourConfig).pose;
-      else if (view.kind === "finale") goal = finalePose(view.progress);
-      else goal = view.pose;
+      allLit = view.kind === "finale";
+      if (view.kind === "journey") {
+        const state = tourState(view.progress, tourConfig);
+        goal = state.pose;
+        active = state.active;
+      } else if (view.kind === "finale") {
+        goal = finalePose(view.progress);
+      } else {
+        goal = view.pose;
+        active = view.active ?? -1;
+      }
     },
 
     setTheme(next, animate) {
@@ -245,7 +315,9 @@ export function createCity(options: CityOptions): CityHandle {
       camera.updateProjectionMatrix();
     },
 
-    setLotLabel() {},
+    setLotLabel(text) {
+      lotSign?.repaint(lotBillboard(text));
+    },
 
     project(anchorId) {
       const anchor = anchors.get(anchorId);
@@ -292,6 +364,9 @@ export function createCity(options: CityOptions): CityHandle {
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
       ground.dispose();
+      windows.dispose();
+      screens.dispose();
+      signs.dispose();
       kit.dispose();
       sun.shadow.map?.dispose();
       renderer.dispose();
@@ -300,5 +375,6 @@ export function createCity(options: CityOptions): CityHandle {
 
   handle.resize();
   renderer.shadowMap.needsUpdate = true;
+  if (import.meta.env.DEV) Object.assign(handle, { info: renderer.info });
   return handle;
 }
