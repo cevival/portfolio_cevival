@@ -32,7 +32,8 @@ const posters = {
 function hasWebGL() {
   try {
     const probe = document.createElement("canvas");
-    const gl = probe.getContext("webgl2") ?? probe.getContext("webgl");
+    // WebGL 2 seulement : Three.js ne démarre plus avec moins
+    const gl = probe.getContext("webgl2");
     // Le contexte de test est rendu tout de suite : leur nombre est limité
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
     return Boolean(gl);
