@@ -1,7 +1,4 @@
-import type { Tone } from "../city/palette";
 import type { Localized } from "../i18n/translations";
-
-export type { Tone };
 
 export interface Shot {
   src: string;
@@ -23,10 +20,6 @@ export interface Project {
   domain: string;
   github?: string;
   shot: Shot;
-}
-
-export interface FeaturedProject extends Project {
-  tone: Tone;
 }
 
 interface ImageMeta {
@@ -64,7 +57,8 @@ const agency: Localized = {
   en: "LB Digital agency site",
 };
 
-export const featured: FeaturedProject[] = [
+/** Les trois projets mis en avant : premiers arrêts de la visite, étiquetés sur le hero. */
+export const featured: Project[] = [
   {
     slug: "qualitrack",
     title: "QualiTrack",
@@ -77,7 +71,6 @@ export const featured: FeaturedProject[] = [
     url: "https://qualitrack-app.fr",
     domain: "qualitrack-app.fr",
     shot: shot("qualitrack"),
-    tone: "violet",
   },
   {
     slug: "dr-salti",
@@ -91,7 +84,6 @@ export const featured: FeaturedProject[] = [
     url: "https://dr-salti.lu",
     domain: "dr-salti.lu",
     shot: shot("dr-salti"),
-    tone: "rouge",
   },
   {
     slug: "sasportas",
@@ -105,7 +97,6 @@ export const featured: FeaturedProject[] = [
     url: "https://sasportas.lu",
     domain: "sasportas.lu",
     shot: shot("sasportas"),
-    tone: "bleu",
   },
 ];
 
@@ -206,10 +197,10 @@ export const more: Project[] = [
     title: "Ce portfolio",
     kind: { fr: "Projet personnel", en: "Personal project" },
     description: {
-      fr: "Portfolio one-page construit avec Astro, React et Tailwind CSS. Bilingue, thème clair ou sombre, déployé sur Vercel via GitHub Actions.",
-      en: "One-page portfolio built with Astro, React and Tailwind CSS. Bilingual, light or dark theme, deployed on Vercel through GitHub Actions.",
+      fr: "Portfolio one-page construit avec Astro, React et Three.js : une ville en 3D dont la caméra voyage au défilement, chaque bâtiment étant un site livré. Bilingue, de jour ou de nuit, déployé sur Vercel via GitHub Actions.",
+      en: "One-page portfolio built with Astro, React and Three.js: a 3D town whose camera travels as you scroll, each building being a shipped site. Bilingual, by day or by night, deployed on Vercel through GitHub Actions.",
     },
-    tags: ["Astro", "React", "TypeScript", "Tailwind CSS"],
+    tags: ["Astro", "React", "Three.js", "TypeScript", "Tailwind CSS"],
     url: "https://guillaume-desplan.vercel.app",
     domain: "guillaume-desplan.vercel.app",
     github: "https://github.com/cevival/portfolio_cevival",

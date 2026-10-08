@@ -23,31 +23,15 @@ export const translations = {
       en: "Available for new opportunities",
     },
     title: { fr: "Développeur full-stack", en: "Full-stack developer" },
-    subtitle: {
-      fr: "Je conçois, développe et mets en production des sites et des applications web, du back-end Laravel à l'interface Astro ou React.",
-      en: "I design, build and ship websites and web applications, from the Laravel back end to the Astro or React front end.",
-    },
     tagline: {
       fr: "Chaque site que j'ai livré est un bâtiment de cette ville. Faites défiler pour la visiter.",
       en: "Every site I've shipped is a building in this town. Scroll to take the tour.",
     },
     cta_tour: { fr: "Commencer la visite", en: "Start the tour" },
     next_lot: { fr: "Prochain : votre projet ?", en: "Next: your project?" },
-    cta_projects: { fr: "Voir les projets", en: "View projects" },
     cta_contact: { fr: "Me contacter", en: "Contact me" },
-    live: { fr: "en ligne", en: "live" },
-    stack_label: {
-      fr: "Trois sites en production",
-      en: "Three sites in production",
-    },
-    open_site: { fr: "Ouvrir", en: "Open" },
-    drag_hint: {
-      fr: "Fenêtres déplaçables. Un clic ouvre le site.",
-      en: "Drag the windows around. Click to open the site.",
-    },
   },
   tour: {
-    label: { fr: "Visite guidée des projets", en: "Guided tour of the projects" },
     stops: { fr: "Arrêts de la visite", en: "Tour stops" },
     previous: { fr: "Arrêt précédent", en: "Previous stop" },
     next: { fr: "Arrêt suivant", en: "Next stop" },
@@ -66,14 +50,6 @@ export const translations = {
   },
   projects: {
     title: { fr: "Projets en production", en: "Projects in production" },
-    lede: {
-      fr: "Des sites livrés pour de vrais clients, au Luxembourg et en France, et QualiTrack, mon projet de formation devenu un SaaS complet.",
-      en: "Websites delivered for real clients in Luxembourg and France, plus QualiTrack, my training project turned into a full SaaS.",
-    },
-    more: { fr: "Autres réalisations", en: "More work" },
-    visit: { fr: "Voir", en: "Visit" },
-    code: { fr: "Code source", en: "Source code" },
-    screenshot_of: { fr: "Capture d'écran de", en: "Screenshot of" },
   },
   stack: {
     title: { fr: "Stack", en: "Stack" },
