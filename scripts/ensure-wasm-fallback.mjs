@@ -5,9 +5,14 @@
 // `astro dev`, `astro check` et `astro build` échouent avec
 // « An Application Control policy has blocked this file ».
 //
-// Ce script, lancé en `postinstall`, remet en place le repli WebAssembly de
-// chaque binaire natif qui refuse de se charger. Il ne fait rien ailleurs que
-// sous Windows, ni quand les binaires natifs se chargent normalement.
+// Ce script remet en place le repli WebAssembly de chaque binaire natif qui
+// refuse de se charger. Il ne fait rien ailleurs que sous Windows, ni quand les
+// binaires natifs se chargent normalement.
+//
+// Il est lancé en `postinstall`, mais npm n'exécute ce crochet que pour un
+// `npm install` sans argument : `npm install <paquet>` et `npm uninstall`
+// retirent le repli sans prévenir. Il est donc aussi lancé avant `dev`,
+// `build` et `check`.
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";

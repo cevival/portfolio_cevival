@@ -8,10 +8,13 @@
   },
   "packageManager": "npm@10.8.2",
   "scripts": {
+    "predev": "node scripts/ensure-wasm-fallback.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/ensure-wasm-fallback.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "precheck": "node scripts/ensure-wasm-fallback.mjs",
     "check": "astro check",
     "test": "vitest run",
     "postinstall": "node scripts/ensure-wasm-fallback.mjs"
