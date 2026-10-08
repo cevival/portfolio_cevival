@@ -86,7 +86,7 @@ export default function Navbar() {
       <nav aria-label={t.main[lang]} className="nav-bar">
         <a href="#top" aria-label={t.home[lang]} className="flex items-center gap-3 font-semibold">
           <Logo className="h-[1.375rem] w-auto" />
-          <span className="hidden sm:inline">{site.name}</span>
+          <span className="hidden whitespace-nowrap sm:inline md:hidden lg:inline">{site.name}</span>
         </a>
 
         <ul className="hidden items-center gap-0.5 md:flex">
@@ -143,7 +143,7 @@ export default function Navbar() {
             </AnimatePresence>
           </button>
 
-          <a href="#contact" className="btn btn--solid btn--sm hidden md:inline-flex">
+          <a href="#contact" className="btn btn--solid btn--sm hidden whitespace-nowrap md:inline-flex">
             {t.contact[lang]}
           </a>
 
