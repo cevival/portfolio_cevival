@@ -797,7 +797,10 @@
       gap: 0.5rem;
       max-width: 36rem;
     }
-    /* Le rail devient une rangée de points */
+    /* Le rail devient une rangée de points, sous la fiche : la ville garde le haut de l'écran */
+    .tour-inner > nav {
+      order: 1;
+    }
     .rail {
       display: flex;
       align-items: center;
@@ -837,8 +840,12 @@
     .stop-steps {
       display: flex;
     }
+    /* La fiche part du bas et prend la hauteur de son texte, sans jamais le couper :
+       la ville occupe ce qui reste. Elle ne défile en elle-même que sur un écran
+       trop bas pour la contenir sous la barre. */
     .stop-card {
-      max-height: 47svh;
+      align-self: end;
+      max-height: calc(100svh - 13rem);
       padding: 1rem 1.125rem 1.125rem;
       overflow-y: auto;
     }
@@ -852,7 +859,7 @@
       line-height: 1.5;
     }
   }
-  /* Petit écran peu haut : le texte se resserre pour laisser la ville visible */
+  /* Petit écran peu haut : le hero se resserre pour laisser la ville visible */
   @media (max-width: 63.99rem) and (max-height: 44rem) {
     .hero-name {
       font-size: clamp(2.375rem, 11.5vw, 4rem);
@@ -860,15 +867,6 @@
     }
     .hero-socials {
       display: none;
-    }
-    .stop-card {
-      max-height: 54svh;
-    }
-    .stop-text {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
-      overflow: hidden;
     }
   }
   /* Sur téléphone la ville est trop petite pour porter des étiquettes */
