@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "motion/react";
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { EASE, RevealText, VIEWPORT, rise, stagger } from "../motion/Reveal";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
@@ -16,58 +16,33 @@ export default function About() {
     { label: t.languages_label[lang], value: t.languages_val[lang] },
   ];
 
-  return (
-    <section id="about" className="band">
-      <div className="grid items-start gap-x-[clamp(2rem,6vw,5rem)] gap-y-12 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
-        {/* L'aplat jaune apparaît, la photo le recouvre, puis il se décale en ombre */}
-        <motion.div
-          className="portrait-wrap"
-          initial="hidden"
-          whileInView="show"
-          viewport={VIEWPORT}
-        >
-          <motion.span
-            aria-hidden="true"
-            className="portrait-shadow"
-            variants={{
-              hidden: { opacity: 0, x: 0, y: 0 },
-              show: {
-                opacity: 1,
-                x: 10,
-                y: 10,
-                transition: {
-                  opacity: { duration: 0.3 },
-                  default: { delay: 0.95, type: "spring", stiffness: 220, damping: 14 },
-                },
-              },
-            }}
-          />
-          <motion.img
-            src={moi.src}
-            width={moi.width}
-            height={moi.height}
-            alt="Guillaume Desplan"
-            decoding="async"
-            className="portrait"
-            variants={{
-              hidden: { clipPath: "inset(0% 0% 100% 0%)" },
-              show: {
-                clipPath: "inset(0% 0% 0% 0%)",
-                transition: { delay: 0.2, duration: 0.9, ease: EASE },
-              },
-            }}
-          />
-        </motion.div>
+  // Le portrait glisse un peu moins vite que la page
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const drift = useTransform(scrollYProgress, [0, 1], [28, -28]);
 
-        <div>
+  return (
+    <section ref={sectionRef} id="about" className="section">
+      <div className="section-inner">
+        <div className="section-head">
           <h2 className="heading">
             <RevealText text={t.title[lang]} />
           </h2>
+          <motion.div
+            className="portrait"
+            style={{ y: drift }}
+            initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            viewport={VIEWPORT}
+            transition={{ delay: 0.15, duration: 0.9, ease: EASE }}
+          >
+            <img src={moi.src} width={moi.width} height={moi.height} alt={t.portrait_alt[lang]} decoding="async" loading="lazy" />
+          </motion.div>
+        </div>
+
+        <div>
           <motion.div {...stagger(0.1)}>
-            <motion.p
-              variants={rise}
-              className="mt-7 max-w-[38em] text-[1.1875rem] leading-relaxed"
-            >
+            <motion.p variants={rise} className="max-w-[38em] text-[1.1875rem] leading-relaxed">
               {t.p1[lang]}
             </motion.p>
             <motion.p variants={rise} className="mt-4 max-w-[38em] text-muted">

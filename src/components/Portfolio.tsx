@@ -44,10 +44,10 @@ export default function Portfolio() {
                 <Journey />
                 {/* Le rideau : des sections opaques qui passent sur la ville */}
                 <div className="curtain">
+                  <Stack />
+                  <Experience />
+                  <About />
                   <div className="mx-auto max-w-[76rem]">
-                    <Stack />
-                    <Experience />
-                    <About />
                     <Contact />
                     <Footer />
                   </div>

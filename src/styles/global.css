@@ -709,57 +709,6 @@
     border-radius: var(--radius-l) var(--radius-l) 0 0;
   }
 
-  /* ════ Ancien style des sections Stack, Parcours, À propos et Contact ════
-     Conservé le temps qu'elles soient refaites. */
-  /* ─── STRUCTURE : rails verticaux + filets horizontaux ─── */
-  .shell {
-    max-width: var(--shell);
-    margin-inline: auto;
-  }
-
-  .band {
-    position: relative;
-    padding: clamp(3.5rem, 8vw, 6.5rem) var(--gutter);
-    border-top: 1px solid var(--rule);
-  }
-
-  @media (min-width: 80rem) {
-    .shell--rails {
-      border-inline: 1px solid var(--rule);
-    }
-
-    /* Nœuds carrés là où un filet croise un rail */
-    .band::before,
-    .band::after {
-      content: "";
-      position: absolute;
-      top: -4px;
-      width: 7px;
-      height: 7px;
-      background: var(--paper);
-      border: 1px solid var(--muted);
-    }
-    .band::before {
-      left: -4px;
-    }
-    .band::after {
-      right: -4px;
-    }
-  }
-
-  .band-head {
-    display: grid;
-    gap: 1.25rem 3rem;
-    align-items: end;
-    margin-bottom: clamp(2.5rem, 5vw, 4rem);
-  }
-  @media (min-width: 56rem) {
-    .band-head {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    }
-  }
-
-
   /* ─── TITRES QUI MONTENT MOT À MOT ─── */
   .reveal-text {
     display: block;
@@ -775,105 +724,204 @@
     display: inline-block;
   }
 
-
-  /* Grille à filets partagés : chaque cellule porte ses bords droit et bas */
-  .cells {
-    display: grid;
-    border-top: 1px solid var(--rule);
-    border-left: 1px solid var(--rule);
+  /* ─── SECTIONS DU RIDEAU ───
+     Titre à gauche, qui reste en place pendant que le contenu défile à droite. */
+  .section {
+    padding: clamp(4rem, 9vw, 7.5rem) var(--gutter);
   }
-  .cells > * {
-    min-width: 0;
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-
-
-  /* ─── STACK ─── */
-  .stack-group {
-    display: grid;
-    gap: 1rem 2rem;
-    padding-block: 1.75rem;
+  .section + .section {
     border-top: 1px solid var(--rule);
   }
-  @media (min-width: 56rem) {
-    .stack-group {
-      grid-template-columns: 11rem minmax(0, 1fr);
+  .section-inner {
+    display: grid;
+    gap: 2.5rem;
+    width: min(100%, var(--shell));
+    margin-inline: auto;
+  }
+  .section-head .lede {
+    margin-top: 1.25rem;
+  }
+  @media (min-width: 64rem) {
+    .section-inner {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+    }
+    .section-head {
+      position: sticky;
+      top: 6.5rem;
+      align-self: start;
     }
   }
-  .stack-cells {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr));
+
+  /* ─── STACK ───
+     Les briques dont la ville est faite, posées en quinconce comme un mur.
+     La tranche de chaque brique porte la couleur de son groupe. */
+  .stack-group + .stack-group {
+    margin-top: 2.75rem;
   }
-  .tech {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.25rem 0.875rem;
+  .stack-label {
+    display: flex;
     align-items: center;
-    padding: 1rem 1.125rem;
-    background: var(--paper);
+    gap: 0.625rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.1875rem;
+    line-height: 1.2;
   }
-  .tech svg,
-  .tech .tech-fallback {
-    width: 1.625rem;
-    height: 1.625rem;
+  .stack-label::before {
+    content: "";
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 3px;
+    background: var(--brick);
+    flex: none;
+  }
+  .bricks {
+    display: grid;
+    gap: 0.75rem 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .brick {
+    display: grid;
+    grid-column: span 2;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    gap: 0.125rem 0.625rem;
+    min-width: 0;
+    padding: 0.75rem 0.875rem 0.875rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-s);
+    background: var(--block);
+    box-shadow: 0 var(--depth) 0 var(--brick);
+  }
+  .brick svg,
+  .brick-initial {
     grid-row: span 2;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.125rem;
   }
-  .tech-fallback {
+  .brick-initial {
     display: grid;
     place-items: center;
+    border-radius: 4px;
     background: var(--vert);
     color: #fff;
-    font-weight: 800;
-    font-size: 0.875rem;
+    font-weight: 700;
+    font-size: 0.8125rem;
+  }
+  .brick-name {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .brick-use {
+    grid-column: 2;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--muted);
+  }
+  /* Le quinconce : une rangée pleine, puis une rangée décalée d'une demi-brique */
+  @media (max-width: 39.99rem) {
+    .bricks {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .brick:nth-child(3n) {
+      grid-column: 2 / span 2;
+    }
+  }
+  @media (min-width: 40rem) and (max-width: 79.99rem) {
+    .bricks {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .brick:nth-child(5n + 4) {
+      grid-column: 2 / span 2;
+    }
+  }
+  @media (min-width: 80rem) {
+    .bricks {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .brick:nth-child(7n + 5) {
+      grid-column: 2 / span 2;
+    }
   }
 
-  /* ─── PARCOURS ─── */
-  .job {
-    display: grid;
-    gap: 0.75rem 2.5rem;
+  /* ─── PARCOURS ───
+     La même ligne que celle de la visite : un trait, une station par expérience. */
+  .line {
     position: relative;
-    padding-block: 2rem;
   }
-  .job-rule {
+  .line ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .line-track {
     position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 0.4375rem;
+    width: 2px;
     background: var(--rule);
-    transform-origin: left;
   }
-  .job:last-child {
-    border-bottom: 1px solid var(--rule);
+  .line-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: top;
   }
-  @media (min-width: 56rem) {
-    .job {
-      grid-template-columns: 11rem minmax(0, 4fr) minmax(0, 6fr);
+  .station {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: 0 1.5rem;
+    padding-bottom: 3.25rem;
+  }
+  .station:last-child {
+    padding-bottom: 0;
+  }
+  .station-dot {
+    position: relative;
+    z-index: 1;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.3125rem;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: var(--paper);
+  }
+  /* La station d'aujourd'hui est allumée, comme l'arrêt actif de la visite */
+  .station--now .station-dot {
+    border-color: var(--ink);
+    background: var(--jaune);
+  }
+  @media (min-width: 48rem) {
+    .station-body {
+      display: grid;
+      grid-template-columns: 10.5rem minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: start;
     }
   }
 
   /* ─── À PROPOS ─── */
-  .portrait-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 24rem;
-  }
-  .portrait-shadow {
-    position: absolute;
-    inset: 0;
-    background: var(--jaune);
-  }
   .portrait {
-    position: relative;
+    width: min(100%, 19rem);
+    margin-top: 2rem;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    box-shadow: 0 var(--depth) 0 var(--edge);
+  }
+  .portrait img {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    border: 1px solid var(--ink);
   }
-  .dark .portrait {
-    border-color: #4a4570;
-  }
-
   .facts {
     margin: 0;
     border-top: 1px solid var(--rule);
@@ -893,6 +941,24 @@
     font-weight: 600;
   }
 
+  /* ════ Ancien style de la section Contact et du pied de page ════
+     Conservé le temps qu'ils soient refaits. */
+  .band {
+    position: relative;
+    padding: clamp(3.5rem, 8vw, 6.5rem) var(--gutter);
+    border-top: 1px solid var(--rule);
+  }
+  /* Grille à filets partagés : chaque cellule porte ses bords droit et bas */
+  .cells {
+    display: grid;
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .cells > * {
+    min-width: 0;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
   /* ─── CONTACT ─── */
   .contact {
     position: relative;
@@ -969,14 +1035,6 @@
     background: #fff;
     color: #16132a;
     box-shadow: 4px 4px 0 var(--jaune);
-  }
-
-
-  .tech {
-    transition: background-color 0.15s;
-  }
-  .tech:hover {
-    background: var(--surface);
   }
 }
 

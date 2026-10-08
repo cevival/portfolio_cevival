@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
-import { EASE, Reveal, RevealText, VIEWPORT, rise } from "../motion/Reveal";
+import { motion, useScroll, useSpring } from "motion/react";
+import { Reveal, RevealText, VIEWPORT, rise } from "../motion/Reveal";
 import { useLang } from "../../context/LangContext";
 import { translations } from "../../i18n/translations";
 
@@ -57,65 +57,69 @@ export default function Experience() {
   const { lang } = useLang();
   const t = translations.experience;
 
-  return (
-    <section id="experience" className="band">
-      <div className="band-head">
-        <h2 className="heading">
-          <RevealText text={t.title[lang]} />
-        </h2>
-        <Reveal delay={0.15}>
-          <p className="lede">{t.lede[lang]}</p>
-        </Reveal>
-      </div>
+  // La ligne se trace au fil du défilement, d'une station à la suivante
+  const lineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: lineRef, offset: ["start 0.78", "end 0.62"] });
+  const drawn = useSpring(scrollYProgress, { stiffness: 160, damping: 30 });
 
-      <ol className="m-0 list-none p-0">
-        {experiences.map((exp) => (
-          <motion.li
-            key={exp.company}
-            className="job"
-            initial="hidden"
-            whileInView="show"
-            viewport={VIEWPORT}
-            transition={{ staggerChildren: 0.1, delayChildren: 0.15 }}
-          >
-            {/* Le filet du haut se trace de gauche à droite */}
-            <motion.span
-              aria-hidden="true"
-              className="job-rule"
-              variants={{
-                hidden: { scaleX: 0 },
-                show: { scaleX: 1, transition: { duration: 1, ease: EASE } },
-              }}
-            />
-            <motion.p variants={rise} className="meta pt-1 text-muted">
-              {exp.period[lang]}
-            </motion.p>
-            <motion.div variants={rise}>
-              <h3 className="text-xl font-bold leading-snug">{exp.role[lang]}</h3>
-              <p className="mt-1 font-semibold text-accent">{exp.company}</p>
-            </motion.div>
-            <motion.div variants={rise}>
-              <p className="text-muted">{exp.description[lang]}</p>
-              <ul className="tags mt-4">
-                {exp.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-              {exp.link && (
-                <a
-                  href={exp.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link mt-4 inline-flex items-center gap-1.5 text-[0.9375rem]"
-                >
-                  {t.visit[lang]} {exp.linkLabel}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                </a>
-              )}
-            </motion.div>
-          </motion.li>
-        ))}
-      </ol>
+  return (
+    <section id="experience" className="section">
+      <div className="section-inner">
+        <div className="section-head">
+          <h2 className="heading">
+            <RevealText text={t.title[lang]} />
+          </h2>
+          <Reveal delay={0.15}>
+            <p className="lede">{t.lede[lang]}</p>
+          </Reveal>
+        </div>
+
+        <div ref={lineRef} className="line">
+          <span className="line-track" aria-hidden="true">
+            <motion.span className="line-fill" style={{ scaleY: drawn }} />
+          </span>
+          <ol>
+            {experiences.map((exp, i) => (
+            <motion.li
+              key={exp.company}
+              className={i === 0 ? "station station--now" : "station"}
+              initial="hidden"
+              whileInView="show"
+              viewport={VIEWPORT}
+              transition={{ staggerChildren: 0.1 }}
+            >
+              <span className="station-dot" aria-hidden="true" />
+              <div className="station-body">
+                <motion.p variants={rise} className="meta pt-1 text-muted">
+                  {exp.period[lang]}
+                </motion.p>
+                <motion.div variants={rise}>
+                  <h3 className="text-xl font-semibold leading-snug">{exp.role[lang]}</h3>
+                  <p className="mt-1 font-semibold text-accent">{exp.company}</p>
+                  <p className="mt-3 text-muted">{exp.description[lang]}</p>
+                  <ul className="tags mt-4">
+                    {exp.tags.map((tag) => (
+                      <li key={tag}>{tag}</li>
+                    ))}
+                  </ul>
+                  {exp.link && (
+                    <a
+                      href={exp.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link mt-4 inline-flex items-center gap-1.5 text-[0.9375rem]"
+                    >
+                      {t.visit[lang]} {exp.linkLabel}
+                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  )}
+                </motion.div>
+              </div>
+            </motion.li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </section>
   );
 }

@@ -92,6 +92,7 @@ export const translations = {
   },
   about: {
     title: { fr: "À propos", en: "About" },
+    portrait_alt: { fr: "Portrait de Guillaume Desplan", en: "Portrait of Guillaume Desplan" },
     p1: {
       fr: "Développeur Full-Stack en alternance chez LB Digital (Luxembourg), je suis actuellement en 3ème année de Bachelor Informatique à la Metz Numeric School. Je conçois et développe des applications web complètes, du back-end (Laravel, Node.js) aux interfaces modernes (React, Astro, Tailwind CSS).",
       en: "Full-Stack Developer on a work-study contract at LB Digital (Luxembourg), currently in my 3rd year of a Computer Science Bachelor's at Metz Numeric School. I design and build complete web applications, from the back end (Laravel, Node.js) to modern front ends (React, Astro, Tailwind CSS).",
