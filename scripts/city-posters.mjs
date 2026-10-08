@@ -12,14 +12,13 @@
 // Pilote Chrome en mode headless par son protocole de débogage, sans dépendance.
 // Chemin de Chrome : variable CHROME_PATH, sinon les emplacements habituels.
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const origin = process.argv[2] ?? "http://localhost:4321";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const PORT = 9333;
 
 const chrome = [
   process.env.CHROME_PATH,
@@ -54,7 +53,9 @@ const browser = spawn(
   chrome,
   [
     "--headless=new",
-    `--remote-debugging-port=${PORT}`,
+    // Port choisi par Chrome : un port fixe pourrait être celui d'un autre Chrome
+    // déjà ouvert, que le script piloterait puis fermerait
+    "--remote-debugging-port=0",
     `--user-data-dir=${profile}`,
     "--no-first-run",
     "--hide-scrollbars",
@@ -66,11 +67,15 @@ const browser = spawn(
 );
 
 let failure = null;
+// Ferme Chrome proprement, une fois la liaison établie
+let close = async () => {};
 try {
+  // Chrome écrit dans son profil le port qu'il a pris ; on attend qu'il y réponde
   let endpoint;
   for (let attempt = 0; attempt < 80 && !endpoint; attempt++) {
     try {
-      endpoint = (await (await fetch(`http://127.0.0.1:${PORT}/json/version`)).json()).webSocketDebuggerUrl;
+      const port = Number.parseInt(readFileSync(path.join(profile, "DevToolsActivePort"), "utf8"), 10);
+      endpoint = (await (await fetch(`http://127.0.0.1:${port}/json/version`)).json()).webSocketDebuggerUrl;
     } catch {
       await sleep(250);
     }
@@ -80,7 +85,7 @@ try {
   const socket = new WebSocket(endpoint);
   await new Promise((resolve, reject) => {
     socket.onopen = resolve;
-    socket.onerror = reject;
+    socket.onerror = () => reject(new Error("liaison avec Chrome refusée"));
   });
   let id = 0;
   const pending = new Map();
@@ -97,6 +102,7 @@ try {
       pending.set(++id, { resolve, reject });
       socket.send(JSON.stringify({ id, method, params, sessionId }));
     });
+  close = () => send("Browser.close").catch(() => {});
 
   const { targetId } = await send("Target.createTarget", { url: "about:blank" });
   const { sessionId } = await send("Target.attachToTarget", { targetId, flatten: true });
@@ -106,9 +112,13 @@ try {
   for (const job of jobs) {
     await page("Emulation.setDeviceMetricsOverride", { width: job.width, height: job.height, deviceScaleFactor: 1, mobile: false });
     await page("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: job.scheme }] });
-    await page("Page.navigate", { url: origin + job.url });
+    const { errorText } = await page("Page.navigate", { url: origin + job.url });
+    if (errorText) throw new Error(`${origin + job.url} : ${errorText}`);
     // Le temps de charger Three.js, les captures des sites et les polices des enseignes
     await sleep(job.wait ?? 6500);
+    // Une page d'erreur ne doit jamais remplacer une image versionnée
+    const { result: scene } = await page("Runtime.evaluate", { expression: `Boolean(document.querySelector("canvas"))` });
+    if (!scene.value) throw new Error(`${origin + job.url} : la scène n'est pas affichée`);
     // La barre d'outils d'Astro n'a rien à faire sur une capture
     await page("Runtime.evaluate", {
       expression: `document.head.appendChild(Object.assign(document.createElement("style"), { textContent: "astro-dev-toolbar { display: none !important }" }))`,
@@ -126,13 +136,12 @@ try {
     writeFileSync(target, Buffer.from(data, "base64"));
     console.log(`${job.file}  ${Math.round(statSync(target).size / 1024)} Ko`);
   }
-
-  await send("Browser.close").catch(() => {});
 } catch (error) {
   failure = error;
 } finally {
   // On laisse Chrome se fermer de lui-même (Browser.close) avant de forcer :
   // tué trop tôt, ses processus enfants gardent le profil verrouillé.
+  await Promise.race([close(), sleep(2000)]);
   await Promise.race([new Promise((resolve) => browser.once("exit", resolve)), sleep(5000)]);
   browser.kill();
   // Un dossier temporaire resté là ne vaut pas un échec
