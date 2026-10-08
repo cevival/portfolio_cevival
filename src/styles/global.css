@@ -1281,11 +1281,6 @@
     border-top: 1px solid var(--rule);
     list-style: none;
   }
-  @media (min-width: 30rem) {
-    .profiles {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
   .profiles a {
     display: flex;
     align-items: center;
