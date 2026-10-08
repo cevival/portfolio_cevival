@@ -705,8 +705,8 @@
   .curtain {
     position: relative;
     background: var(--paper);
-    border-top: 1px solid var(--rule);
-    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    border-block: 1px solid var(--rule);
+    border-radius: var(--radius-l);
   }
 
   /* ─── TITRES QUI MONTENT MOT À MOT ─── */
@@ -941,100 +941,93 @@
     font-weight: 600;
   }
 
-  /* ════ Ancien style de la section Contact et du pied de page ════
-     Conservé le temps qu'ils soient refaits. */
-  .band {
+  /* ─── CONTACT : LE FINAL ───
+     Section transparente : le rideau s'arrête au-dessus et la ville revient. */
+  .finale {
     position: relative;
-    padding: clamp(3.5rem, 8vw, 6.5rem) var(--gutter);
-    border-top: 1px solid var(--rule);
+    display: flex;
+    min-height: 100svh;
   }
-  /* Grille à filets partagés : chaque cellule porte ses bords droit et bas */
-  .cells {
-    display: grid;
-    border-top: 1px solid var(--rule);
-    border-left: 1px solid var(--rule);
+  /* Voile du côté du texte, comme sur le hero */
+  .finale::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--paper) 78%, transparent) 0%,
+      transparent 52%
+    );
+    pointer-events: none;
   }
-  .cells > * {
-    min-width: 0;
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  /* ─── CONTACT ─── */
-  .contact {
+  .finale-inner {
     position: relative;
-    overflow: hidden;
-    background: var(--accent-solid);
-    color: #fff;
-    padding: clamp(2rem, 6vw, 4.5rem);
+    display: flex;
+    align-items: center;
+    width: min(100%, var(--shell) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding: 7rem var(--gutter) 4rem;
   }
-  .contact > :not(.contact-shapes) {
-    position: relative;
-  }
-  .contact-shapes {
-    display: none;
-  }
-  @media (min-width: 64rem) {
-    .contact-shapes {
-      display: block;
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .shape {
-      position: absolute;
-    }
-    .shape--circle {
-      top: -3.5rem;
-      right: 6%;
-      width: 13rem;
-      height: 13rem;
-      border-radius: 50%;
-      background: var(--jaune);
-    }
-    .shape--square {
-      top: 46%;
-      right: 24%;
-      width: 5.5rem;
-      height: 5.5rem;
-      background: #f4442e;
-    }
-    .shape--quarter {
-      right: 5%;
-      bottom: -1.5rem;
-      width: 9rem;
-      height: 9rem;
-      border-radius: 100% 0 0 0;
-      background: #16132a;
-    }
+  .finale-card {
+    width: min(100%, 33rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
   }
   .contact-mail {
     display: inline-block;
     max-width: 100%;
-    font-stretch: 78%;
-    font-weight: 700;
-    font-size: clamp(1.375rem, 4.6vw, 3.25rem);
-    line-height: 1.1;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.1875rem, 2.3vw, 1.625rem);
+    line-height: 1.2;
     overflow-wrap: anywhere;
+    color: var(--accent);
     text-decoration: underline;
     text-decoration-thickness: 2px;
-    text-underline-offset: 0.18em;
-    text-decoration-color: var(--jaune);
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
   }
   .contact-mail:hover {
-    color: var(--jaune);
+    text-decoration-color: currentColor;
   }
-  .contact :focus-visible {
-    outline-color: var(--jaune);
+  .profiles {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.75rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--rule);
+    list-style: none;
   }
-  .contact .btn {
-    border-color: #fff;
-    background: transparent;
-    color: #fff;
+  @media (min-width: 30rem) {
+    .profiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
-  .contact .btn:hover {
-    background: #fff;
-    color: #16132a;
-    box-shadow: 4px 4px 0 var(--jaune);
+  .profiles a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-s);
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+  }
+  .profiles a:hover {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+
+  .footer {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.375rem 2rem;
+    padding: 1.125rem var(--gutter) 1.25rem;
+    border-top: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--muted);
   }
 }
 

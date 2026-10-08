@@ -18,7 +18,7 @@ function Footer() {
   const { lang } = useLang();
 
   return (
-    <footer className="band meta flex flex-wrap justify-between gap-x-8 gap-y-2 !py-7 text-muted">
+    <footer className="footer meta">
       <p>
         © {new Date().getFullYear()} {site.name}
       </p>
@@ -47,12 +47,11 @@ export default function Portfolio() {
                   <Stack />
                   <Experience />
                   <About />
-                  <div className="mx-auto max-w-[76rem]">
-                    <Contact />
-                    <Footer />
-                  </div>
                 </div>
+                {/* Sous le rideau, la ville revient pour le final */}
+                <Contact />
               </main>
+              <Footer />
             </div>
           </CityProvider>
         </LangProvider>

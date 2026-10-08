@@ -128,8 +128,8 @@ export const translations = {
   },
   footer: {
     built: {
-      fr: "Construit avec Astro, React et Tailwind CSS. Hébergé sur Vercel.",
-      en: "Built with Astro, React and Tailwind CSS. Hosted on Vercel.",
+      fr: "Construit avec Astro, React, Three.js et Tailwind CSS. Hébergé sur Vercel.",
+      en: "Built with Astro, React, Three.js and Tailwind CSS. Hosted on Vercel.",
     },
   },
 } as const;
