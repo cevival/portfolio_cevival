@@ -42,7 +42,7 @@ export const translations = {
     lot_kind: { fr: "Parcelle libre", en: "Vacant lot" },
     lot_text: {
       fr: "Cette parcelle est libre. Un site vitrine, une application métier, une refonte : parlons de ce que vous voulez y construire.",
-      en: "This lot is free. A showcase site, a business app, a redesign: let's talk about what you want to build here.",
+      en: "This lot is vacant. A showcase site, a business app, a redesign: let's talk about what you want to build here.",
     },
     lot_cta: { fr: "Me contacter", en: "Contact me" },
     // Panneau du terrain dans la scène : une petite ligne, puis la grande
