@@ -380,6 +380,9 @@ export function createCity(options: CityOptions): CityHandle {
       camera.aspect = w / h;
       applyFraming();
       applyLens();
+      // Changer de taille vide le canvas, et l'observateur passe après le rendu de
+      // l'image : sans ce dessin, l'image d'attente apparaîtrait le temps d'une image
+      if (running && !lost) renderer.render(scene, camera);
     },
 
     start() {
