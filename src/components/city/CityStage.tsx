@@ -140,23 +140,25 @@ export function CityStage() {
       const contactRect = contact?.getBoundingClientRect();
       const inContact = Boolean(contactRect && contactRect.top < viewport);
 
+      // L'état de la visite se calcule même quand elle est plus haut que l'écran
+      // (lien profond, page rechargée plus bas) : sinon le hero resterait actif
+      // et la visite inerte, à l'inverse de ce qu'on trouve en remontant. Une
+      // fois la visite dépassée la progression vaut 1 : rien à replacer au
+      // redimensionnement.
+      const progress = progressOf(-journeyRect.top, pinned);
+      progressNow = progress;
+      const state = tourState(progress, tourConfig);
+      // Les fondus passent par des propriétés CSS : aucun rendu React à chaque image
+      pin.style.setProperty("--hero", state.heroFade.toFixed(3));
+      pin.style.setProperty("--tour", state.tourFade.toFixed(3));
+      // Effacé avant que le premier arrêt ne prenne le relais : ni clic ni focus sur du texte invisible
+      pin.toggleAttribute("data-hero-out", state.heroFade === 0);
+      publish(state.active);
+
       if (inJourney) {
-        const progress = progressOf(-journeyRect.top, pinned);
-        progressNow = progress;
-        const state = tourState(progress, tourConfig);
-        // Les fondus passent par des propriétés CSS : aucun rendu React à chaque image
-        pin.style.setProperty("--hero", state.heroFade.toFixed(3));
-        pin.style.setProperty("--tour", state.tourFade.toFixed(3));
-        // Effacé avant que le premier arrêt ne prenne le relais : ni clic ni focus sur du texte invisible
-        pin.toggleAttribute("data-hero-out", state.heroFade === 0);
-        publish(state.active);
         city?.setView({ kind: "journey", progress });
         if (state.heroFade > 0) placeChips();
-      } else {
-        // Hors de la visite, un redimensionnement n'a rien à replacer
-        progressNow = journeyRect.top >= 0 ? 0 : 1;
-      }
-      if (!inJourney && contactRect && inContact) {
+      } else if (contactRect && inContact) {
         city?.setView({
           kind: "finale",
           progress: progressOf(viewport - contactRect.top, contactRect.height),
